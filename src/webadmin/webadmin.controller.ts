@@ -13,4 +13,9 @@ export class WebadminController {
   }
 
 
+  @Get('/dataLogs')
+  getDataLogs(){
+    return this.webadminService.dataLogs();
+  }
+
 }

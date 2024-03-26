@@ -10,4 +10,17 @@ export class Commons {
   decodeFromBase64(base64Data: string): string {
     return Buffer.from(base64Data, 'base64').toString('utf-8');
   }
+
+  decodeParams(texto: string): string {
+    texto = texto.replace(/&nbsp;/g, ' ');
+    texto = texto.replace(/&gt;/g, '>');
+    return texto;
+  }
+
+  splitLines(text: string): string[] {
+    const lines= text.split('<br>');
+    const linesWhitoutSpaces = lines.map(linea => linea.trim());
+
+    return linesWhitoutSpaces;// Dividir el texto en líneas utilizando "<br>" como separador y retornar un array de líneas
+  }
 }
