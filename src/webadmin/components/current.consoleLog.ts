@@ -15,8 +15,8 @@ export class CurrentConsoleLog {
   ) {
   }
 
-  async dataLogs(url: string, endpoint: string, userAdmin: string, password: string): Promise<string[]> {
-    const credentials = this.commons.encodeToBase64(`${userAdmin}:${password}`);
+  async dataLogs(url: string, endpoint: string, credentials: string): Promise<string[]> {
+    // const credentials = this.commons.encodeToBase64(`${userAdmin}:${password}`);
 
     const headers = {
       'Authorization': `Basic ${credentials}`,
