@@ -1,7 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { WebadminService } from './webadmin.service';
-import { CreateWebadminDto } from './dto/create-webadmin.dto';
-import { UpdateWebadminDto } from './dto/update-webadmin.dto';
+import { Controller, Get } from '@nestjs/common';
+import { WebadminService } from "./webadmin.service";
 
 @Controller('webAdmin')
 export class WebadminController {
@@ -11,7 +9,6 @@ export class WebadminController {
   getStatus(){
     return this.webadminService.getConnection();
   }
-
 
   @Get('/dataLogs')
   getDataLogs(){

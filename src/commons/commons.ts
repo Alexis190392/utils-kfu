@@ -14,6 +14,8 @@ export class Commons {
   decodeParams(texto: string): string {
     texto = texto.replace(/&nbsp;/g, ' ');
     texto = texto.replace(/&gt;/g, '>');
+    texto = texto.replace(/&lt;/g, '<');
+
     return texto;
   }
 
@@ -21,6 +23,6 @@ export class Commons {
     const lines= text.split('<br>');
     const linesWhitoutSpaces = lines.map(linea => linea.trim());
 
-    return linesWhitoutSpaces;// Dividir el texto en líneas utilizando "<br>" como separador y retornar un array de líneas
+    return linesWhitoutSpaces;
   }
 }

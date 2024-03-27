@@ -1,114 +1,51 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
-
+import { CurrentConsoleLog, WebadminConnect } from "./components";
+import { ConfigService } from "@nestjs/config";
 import * as process from "process";
-import axios from "axios";
-import * as iconv from 'iconv-lite';
-
-import { Commons } from "../commons/commons";
 
 @Injectable()
 export class WebadminService {
+  private readonly logger = new Logger(WebadminService.name);
 
   private readonly baseUrl = `http://${process.env.WEBADMIN_URI}:${process.env.WEBADMIN_PORT}${process.env.DEFAULT_ENDPOINT}`;
   private readonly userAdmin = process.env.WEBADMIN_USER;
   private readonly password = process.env.WEBADMIN_PASS;
+  private readonly currentConsoleEndpoint = process.env.CURRENT_CONSOLE_LOG;
 
-  private cache: string[] = [];
   constructor(
-    private readonly commons:Commons
-  ) {
-  }
-
-  async getConnection(){
-
-    const url = this.baseUrl;
-    const credentials = this.commons.encodeToBase64(`${this.userAdmin}:${this.password}`);
-
-    const headers = {
-      'Authorization': `Basic ${credentials}`,
-    };
-
-    try {
-      const response = await axios.get(url, { headers });
-
-      // return response.data;
-      if (response.status === 200){
-        return true
-      }
-
-    } catch (error) {
-      console.log(error)
-      return false
-    }
-
-  }
+    private readonly currentConsoleLog: CurrentConsoleLog,
+    private readonly webadminConnect: WebadminConnect,
+  ) {}
 
   @Cron('*/5 * * * * *')
-  async cronDataLogs(){
-    let data= await this.dataLogs();
-    const forLogs = await this.newMessages(data);
-    console.log(forLogs);
-    // return await this.newMessages(data)
-    // return this.dataLogs();
+  async cronDataLogs() {
+    try {
+      const data = await this.currentConsoleLog.dataLogs(this.baseUrl, this.currentConsoleEndpoint, this.userAdmin, this.password);
+      const forLogs = await this.currentConsoleLog.newMessages(data);
+      console.log(forLogs);
+      // return await this.newMessages(data)
+      // return this.dataLogs();
+    } catch (error) {
+      this.logger.error(`Error en cronDataLogs: ${error.message}`);
+    }
   }
 
-  async dataLogs(): Promise<string[]> {
-    const url = `${this.baseUrl}/current_console_log`;
-    axios.defaults.responseEncoding= 'utf8';
-    const credentials = this.commons.encodeToBase64(`${this.userAdmin}:${this.password}`);
-
-    const headers = {
-      'Authorization': `Basic ${credentials}`,
-    };
-
+  async getConnection() {
     try {
-
-      const response = await axios.get(url, { headers, responseType: 'arraybuffer' });
-      const decodedData = iconv.decode(response.data, 'iso-8859-1'); // Decode from iso-8859-1 to UTF-8
-      const consoleLogHtml = decodedData.toString(); // Convert to string
-
-      const startTag = '&gt;';
-      const endTag = '<a name="END"></a>';
-      const startIndex = consoleLogHtml.indexOf(startTag);
-      const endIndex = consoleLogHtml.indexOf(endTag);
-      let consoleLogText = ""
-      if (startIndex !== -1 && endIndex !== -1) {
-        consoleLogText = consoleLogHtml.substring(startIndex + startTag.length, endIndex).trim();
-        consoleLogText = this.commons.decodeParams(consoleLogText);
-
-      }
-        return this.commons.splitLines(consoleLogText);
-        //throw new Error('No se pudo encontrar el contenido de la consola en la respuesta HTML.');
-
+      return await this.webadminConnect.getConnection(this.baseUrl, this.userAdmin, this.password);
     } catch (error) {
-      console.error(error);
+      this.logger.error(`Error en getConnection: ${error.message}`, error.stack);
       throw error;
     }
   }
 
-  async newMessages(messages: string[]) {
-    let newMessages: string[] = [];
-
-    if (this.cache.length === 0) {
-      this.cache = [...messages];
-      return [...messages];
+  async dataLogs() {
+    try {
+      return await this.currentConsoleLog.dataLogs(this.baseUrl, this.currentConsoleEndpoint, this.userAdmin, this.password);
+    } catch (error) {
+      this.logger.error(`Error in dataLogs: ${error.message}`, error.stack);
+      throw error; // Re-lanza el error para que sea manejado en un nivel superior si es necesario.
     }
-
-    let found = false;
-    for (let i = 0; i < messages.length; i++) {
-      if (!this.cache.includes(messages[i])) {
-        found = true;
-        newMessages.push(messages[i]);
-      } else if (found) {
-        break;
-      }
-    }
-
-    if (found) {
-      this.cache = [...messages];
-    }
-
-    return newMessages;
   }
 }
