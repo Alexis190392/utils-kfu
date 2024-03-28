@@ -11,16 +11,18 @@ export class Commons {
     return Buffer.from(base64Data, 'base64').toString('utf-8');
   }
 
-  decodeParams(texto: string): string {
-    texto = texto.replace(/&nbsp;/g, ' ');
-    texto = texto.replace(/&gt;/g, '>');
-    texto = texto.replace(/&lt;/g, '<');
+  decodeParams(text: string): string {
+    text = text.replace(/&nbsp;/g, ' ');
+    text = text.replace(/&lt;/g, '<');
+    text = text.replace(/&gt;/g, '>');
+    text = text.replace(/><br>/g,'>');
+    text = text.replace(/<br>>/g,';');
 
-    return texto;
+    return text;
   }
 
   splitLines(text: string): string[] {
-    const lines= text.split('<br>');
+    const lines= text.split(';');
     const linesWhitoutSpaces = lines.map(linea => linea.trim());
 
     return linesWhitoutSpaces;

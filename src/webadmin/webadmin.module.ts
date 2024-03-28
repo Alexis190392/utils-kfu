@@ -8,6 +8,8 @@ import { Commons } from "../commons/commons";
 import { CurrentConsoleLog,
         CurrentConsoleSend,
         WebadminConnect } from "./components";
+import { DCModule } from "../discord/discord.module";
+import { DiscordWebhooks } from "../discord/discord.webhooks";
 
 
 @Module({
@@ -15,7 +17,15 @@ import { CurrentConsoleLog,
   imports:[
     ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
+    DCModule,
   ],
-  providers: [WebadminService, Commons, CurrentConsoleLog, WebadminConnect, CurrentConsoleSend],
+  providers: [
+    WebadminService,
+    Commons,
+    CurrentConsoleLog,
+    WebadminConnect,
+    CurrentConsoleSend,
+    DiscordWebhooks,
+  ],
 })
 export class WebadminModule {}

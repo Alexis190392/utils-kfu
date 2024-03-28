@@ -3899,6 +3899,11 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nestjs-discord-webhook@^1.11.9:
+  version "1.11.9"
+  resolved "https://registry.yarnpkg.com/nestjs-discord-webhook/-/nestjs-discord-webhook-1.11.9.tgz#21cc1661802598b16cfee2e95bb4bc2a3df3518f"
+  integrity sha512-8CiN9uqhSRr0iN2+dcqpZm0I+XxU3XoNDhzmwJWpafXX+w+1oJXNvi7yzsW4M/3DXmXgZZd6oV2VYIZ2aVvBOw==
+
 node-abort-controller@^3.0.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/node-abort-controller/-/node-abort-controller-3.1.1.tgz#a94377e964a9a37ac3976d848cb5c765833b8548"

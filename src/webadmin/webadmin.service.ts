@@ -6,6 +6,10 @@ import {
   CurrentConsoleLog,
   CurrentConsoleSend,
   WebadminConnect } from "./components";
+import { DiscordService } from "../discord/discord.service";
+import { DiscordWebhooks } from "../discord/discord.webhooks";
+// import { DiscordUtils } from "../discord/discord.utils";
+// import { ComponentsSend } from "../discord/components";
 
 @Injectable()
 export class WebadminService {
@@ -20,8 +24,8 @@ export class WebadminService {
     private readonly webadminConnect: WebadminConnect,
     private readonly commons: Commons,
     private readonly currentConsoleLog: CurrentConsoleLog,
-
     private readonly currentConsoleSend: CurrentConsoleSend,
+    private readonly webhooks: DiscordWebhooks,
   ) {}
 
   @Cron('*/5 * * * * *')
@@ -29,9 +33,16 @@ export class WebadminService {
     try {
       const data = await this.currentConsoleLog.dataLogs(this.baseUrl, this.consoleEndpoint, this.credentials);
       const forLogs = await this.currentConsoleLog.newMessages(data);
-      console.log(forLogs);
-      // return await this.newMessages(data)
-      // return this.dataLogs();
+
+      if (forLogs.length > 0){
+        let message = '';
+        for (const forLog of forLogs) {
+          if (forLog != ''){
+            message = `${message}\n${forLog}`
+          }
+        }
+        await this.webhooks.sendMessage(message);
+      }
     } catch (error) {
       this.logger.error(`Error en cronDataLogs: ${error.message}`);
     }
