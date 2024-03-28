@@ -17,6 +17,8 @@ export class Commons {
     text = text.replace(/&gt;/g, '>');
     text = text.replace(/><br>/g,'>');
     text = text.replace(/<br>>/g,';');
+    text = text.replace(/<br>/g,'');
+
 
     return text;
   }
