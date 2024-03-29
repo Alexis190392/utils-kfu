@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class Commons {
@@ -25,8 +25,6 @@ export class Commons {
 
   splitLines(text: string): string[] {
     const lines= text.split(';');
-    const linesWhitoutSpaces = lines.map(linea => linea.trim());
-
-    return linesWhitoutSpaces;
+    return lines.map(linea => linea.trim());
   }
 }

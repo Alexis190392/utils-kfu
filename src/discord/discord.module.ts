@@ -13,6 +13,8 @@ import { SlashCommands } from "./discord.slash";
 import { DiscordUtils } from "./discord.utils";
 import { StringSelectMenu } from "./components";
 import { DiscordWebhooks } from "./discord.webhooks";
+import { WebadminModule } from "../webadmin/webadmin.module";
+import { Commons } from "../commons/commons";
 
 @Module({
   controllers: [DiscordController],
@@ -31,13 +33,15 @@ import { DiscordWebhooks } from "./discord.webhooks";
         IntentsBitField.Flags.GuildIntegrations
       ],
     }),
+    WebadminModule,
   ],
   providers: [
     DiscordService,
     SlashCommands,
     DiscordUtils,
     StringSelectMenu,
-    DiscordWebhooks
+    DiscordWebhooks,
+    Commons,
   ],
   exports:[DiscordService,]
 })

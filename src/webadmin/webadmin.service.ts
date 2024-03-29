@@ -2,14 +2,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import * as process from "process";
 import { Commons } from "../commons/commons";
-import {
-  CurrentConsoleLog,
-  CurrentConsoleSend,
-  WebadminConnect } from "./components";
-import { DiscordService } from "../discord/discord.service";
+import { CurrentConsoleLog, CurrentConsoleSend, WebadminConnect } from "./components";
 import { DiscordWebhooks } from "../discord/discord.webhooks";
-// import { DiscordUtils } from "../discord/discord.utils";
-// import { ComponentsSend } from "../discord/components";
 
 @Injectable()
 export class WebadminService {
@@ -67,7 +61,6 @@ export class WebadminService {
   }
 
   async sendMessage(sendText: string) {
-    return this.currentConsoleSend.sendMessage(sendText,this.baseUrl,this.consoleSend, this.credentials)
-    
+    return this.currentConsoleSend.sendMessage(sendText, this.baseUrl, this.consoleSend, this.credentials);
   }
 }

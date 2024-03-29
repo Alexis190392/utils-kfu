@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import {
-  Context,
+  Context, Options,
   SlashCommand,
-  SlashCommandContext,
-} from 'necord';
+  SlashCommandContext, StringOption
+} from "necord";
+import { TextDto } from "./dtos/discord.texto.dto";
+import { WebadminService } from "../webadmin/webadmin.service";
 import { DiscordService } from "./discord.service";
 
 @Injectable()
@@ -13,12 +15,22 @@ export class SlashCommands {
      private readonly discordService:DiscordService,
   ) {
   }
+
   @SlashCommand({
     name: 'ping',
     description: 'Ping-Pong Command',
   })
-  public async onPing(@Context() [interaction]: SlashCommandContext) {
+  async onPing(@Context() [interaction]: SlashCommandContext) {
     return interaction.reply({ content: 'Pong!' });
+  }
+
+  @SlashCommand({
+    name: 'send',
+    description: 'Enviar mensaje al servidor'
+  })
+  async onSend(@Context() [interaction]: SlashCommandContext, @Options() { text }: TextDto) {
+    const response=  await this.discordService.sendMessage(text, [interaction])
+    return interaction.reply({content: response });
   }
 
   //muestra listado de canales de texto
