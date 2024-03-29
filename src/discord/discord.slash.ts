@@ -4,9 +4,8 @@ import {
   SlashCommand,
   SlashCommandContext, StringOption
 } from "necord";
-import { TextDto } from "./dtos/discord.texto.dto";
-import { WebadminService } from "../webadmin/webadmin.service";
 import { DiscordService } from "./discord.service";
+import { TextDto } from "./dtos/discord.texto.dto";
 
 @Injectable()
 export class SlashCommands {
