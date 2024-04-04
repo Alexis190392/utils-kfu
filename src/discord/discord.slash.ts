@@ -32,7 +32,7 @@ export class SlashCommands {
     return interaction.reply({content: response });
   }
 
-  //muestra listado de canales de texto
+  // muestra listado de canales de texto
   // @SlashCommand({
   //   name: 'logs-server',
   //   description: 'Select a text channel for server logs',
@@ -40,5 +40,15 @@ export class SlashCommands {
   // public async onLogsServer(@Context() [interaction]: SlashCommandContext){
   //   await this.discordService.onLogsServer([interaction]);
   // }
+
+  @SlashCommand({
+    name: 'players',
+    description: 'Accion a jugadores actuales.'
+  })
+  async onPlayers(@Context() [interaction]){
+    const response = await this.discordService.players([interaction]);
+    return interaction.reply({content: response });
+  }
+
 
 }

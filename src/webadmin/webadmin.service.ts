@@ -14,6 +14,7 @@ export class WebadminService {
   private readonly consoleEndpoint = process.env.CURRENT_CONSOLE_LOG;
   private readonly consoleSend = process.env.CURRENT_CONSOLE_SEND;
   private readonly playersEndpoint = process.env.CURRENT_PLAYERS;
+  private readonly customWebAdmin = process.env.WEBADMIN_DEFAULT;
 
   constructor(
     private readonly webadminConnect: WebadminConnect,

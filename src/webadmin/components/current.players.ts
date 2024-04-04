@@ -44,9 +44,6 @@ export class CurrentPlayers{
             const session = $(columns[1]).find('input[name^="Session"]').attr('name');
             const ban = $(columns[2]).find('input[name^="Ban"]').attr('name');
 
-            console.log('kick: ' + kick);
-            console.log('session: ' + session);
-            console.log('ban: ' + ban);
             const player: PlayerDto = {
               name,
               team,
