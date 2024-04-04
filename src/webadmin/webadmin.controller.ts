@@ -15,6 +15,11 @@ export class WebadminController {
     return this.webadminService.dataLogs();
   }
 
+  @Get('/players')
+  getPlayers(){
+    return this.webadminService.players();
+  }
+
   @Post('/send')
   async enviarPost(@Body('SendText') sendText: string) {
     try {

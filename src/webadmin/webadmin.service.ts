@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import * as process from "process";
 import { Commons } from "../commons/commons";
-import { CurrentConsoleLog, CurrentConsoleSend, WebadminConnect } from "./components";
+import { CurrentConsoleLog, CurrentConsoleSend, CurrentPlayers, WebadminConnect } from "./components";
 import { DiscordWebhooks } from "../discord/discord.webhooks";
 
 @Injectable()
@@ -13,12 +13,14 @@ export class WebadminService {
   private readonly credentials = this.commons.encodeToBase64(`${process.env.WEBADMIN_USER}:${process.env.WEBADMIN_PASS}`);
   private readonly consoleEndpoint = process.env.CURRENT_CONSOLE_LOG;
   private readonly consoleSend = process.env.CURRENT_CONSOLE_SEND;
+  private readonly playersEndpoint = process.env.CURRENT_PLAYERS;
 
   constructor(
     private readonly webadminConnect: WebadminConnect,
     private readonly commons: Commons,
     private readonly currentConsoleLog: CurrentConsoleLog,
     private readonly currentConsoleSend: CurrentConsoleSend,
+    private readonly currentPlayers: CurrentPlayers,
     private readonly webhooks: DiscordWebhooks,
   ) {}
 
@@ -62,5 +64,14 @@ export class WebadminService {
 
   async sendMessage(sendText: string) {
     return this.currentConsoleSend.sendMessage(sendText, this.baseUrl, this.consoleSend, this.credentials);
+  }
+
+  async players() {
+    try {
+      return await this.currentPlayers.players(this.baseUrl, this.playersEndpoint, this.credentials);
+    } catch (error) {
+      this.logger.error(`Error in get players: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 }

@@ -5,9 +5,11 @@ import { ConfigModule } from "@nestjs/config";
 import { WebadminService } from './webadmin.service';
 import { WebadminController } from './webadmin.controller';
 import { Commons } from "../commons/commons";
-import { CurrentConsoleLog,
-        CurrentConsoleSend,
-        WebadminConnect } from "./components";
+import {
+  CurrentConsoleLog,
+  CurrentConsoleSend, CurrentPlayers,
+  WebadminConnect
+} from "./components";
 import { DiscordWebhooks } from "../discord/discord.webhooks";
 
 
@@ -21,6 +23,7 @@ import { DiscordWebhooks } from "../discord/discord.webhooks";
     WebadminService,
     Commons,
     CurrentConsoleLog,
+    CurrentPlayers,
     WebadminConnect,
     CurrentConsoleSend,
     DiscordWebhooks,

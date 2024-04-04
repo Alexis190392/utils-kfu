@@ -18,10 +18,7 @@ export class DiscordService {
     const member = await interaction.member;
     const roles = member.roles.cache.map(role => role.name);
 
-    console.log(allows);
-    console.log(roles);
     let verify = false;
-
     for (const allow of allows) {
       for (const role of roles) {
         if (allow === role){
