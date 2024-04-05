@@ -13,6 +13,7 @@ export class WebadminService {
   private readonly credentials = this.commons.encodeToBase64(`${process.env.WEBADMIN_USER}:${process.env.WEBADMIN_PASS}`);
   private readonly consoleEndpoint = process.env.CURRENT_CONSOLE_LOG;
   private readonly consoleSend = process.env.CURRENT_CONSOLE_SEND;
+  private count = 0;
 
   constructor(
     private readonly webadminConnect: WebadminConnect,
@@ -29,6 +30,7 @@ export class WebadminService {
       const forLogs = await this.currentConsoleLog.newMessages(data);
 
       if (forLogs.length > 0){
+
         let message = '';
         for (const forLog of forLogs) {
           if (forLog != ''){
@@ -36,9 +38,15 @@ export class WebadminService {
           }
         }
         await this.webhooks.sendMessage(message);
+        this.count = 0;
       }
     } catch (error) {
-      this.logger.error(`Error en cronDataLogs: ${error.message}`);
+      this.count++;
+      if (this.count === 12){ //un minuto por repeticiones del cron
+        await this.webhooks.sendMessage("ERROR EN SERVIDOR - VERIFICAR ESTADO");
+      }
+
+      this.logger.error(`Error en cronDataLogs: ${error.message} - retry ${this.count}`);
     }
   }
 
@@ -55,7 +63,7 @@ export class WebadminService {
     try {
       return await this.currentConsoleLog.dataLogs(this.baseUrl, this.consoleEndpoint, this.credentials);
     } catch (error) {
-      this.logger.error(`Error in dataLogs: ${error.message}`, error.stack);
+      this.logger.error(`Error en dataLogs: ${error.message}`, error.stack);
       throw error;
     }
   }

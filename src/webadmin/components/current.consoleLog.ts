@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import axios from "axios";
 import * as iconv from "iconv-lite";
+import cheerio from 'cheerio';
 
 import { Commons } from "../../commons/commons";
 
@@ -20,6 +21,7 @@ export class CurrentConsoleLog {
 
     const headers = {
       'Authorization': `Basic ${credentials}`,
+      'Connection':'close'
     };
 
     try {
@@ -28,6 +30,15 @@ export class CurrentConsoleLog {
 
       const decodedData = iconv.decode(response.data, 'iso-8859-1'); // Decode from iso-8859-1 to UTF-8
       const consoleLogHtml = decodedData.toString(); // Convert to string
+
+      const $ = cheerio.load(consoleLogHtml);
+      const gameTitleCell = $('td.ttext').text().trim();
+
+      // If the game title cell is found, assign its value to mapGame
+      const mapGame = gameTitleCell ? gameTitleCell : "Unknown";
+
+      // Print mapGame to console
+      console.log("Game Title:", mapGame);
 
       const startTag = '&gt;';
       const endTag = '<a name="END"></a>';
