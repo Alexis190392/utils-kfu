@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Server {
@@ -7,6 +7,9 @@ export class Server {
 
   @Column( {unique : true})
   name : string;
+
+  @Column('text',{unique: true})
+  slug: string;
 
   @Column('text')
   ip : string;
@@ -25,4 +28,20 @@ export class Server {
   })
   isActive : boolean;
 
+  @BeforeInsert()
+  checkSlugInsert(){
+    if (!this.slug){
+      this.slug = this.name;
+    }
+    this.slug = this.slug.toLowerCase()
+      .replaceAll(' ','_')
+      .replaceAll("'",'');
+  }
+
+  @BeforeUpdate()
+  checkSlugUpdate(){
+    this.slug = this.slug.toLowerCase()
+      .replaceAll(' ','_')
+      .replaceAll("'",'');
+  }
 }

@@ -18,6 +18,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
       "lib": [
+          "es2021",
           "es2021.full",
           "webworker"
       ]

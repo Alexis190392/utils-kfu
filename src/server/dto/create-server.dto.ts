@@ -1,10 +1,14 @@
-import { IsString, MinLength } from "class-validator";
+import { IsOptional, IsString, MinLength } from "class-validator";
 
 export class CreateServerDto {
 
   @IsString()
   @MinLength(1)
   name : string;
+
+  @IsString()
+  @IsOptional()
+  slug? : string
 
   @IsString()
   @MinLength(7)
