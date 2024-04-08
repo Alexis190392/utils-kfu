@@ -32,6 +32,15 @@ export class SlashCommands {
     return interaction.reply({content: response });
   }
 
+  @SlashCommand({
+    name: 'roles',
+    description: 'Extraer roles'
+  })
+  async onRole(@Context() [interaction]){
+    await this.discordService.getRoles([interaction]);
+    return interaction.reply({content: "Prueba rol" });
+  }
+
   //muestra listado de canales de texto
   // @SlashCommand({
   //   name: 'logs-server',

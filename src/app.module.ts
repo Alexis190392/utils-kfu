@@ -4,7 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Commons } from './commons/commons';
-import { DCModule } from "./discord/discord.module";
+import { DcordModule } from "./discord/discord.module";
 import { ServerModule } from './server/server.module';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DcModule } from './dc/dc.module';
@@ -24,7 +24,7 @@ import * as process from "process";
       synchronize: true, //en prod va en false
 
     }),
-    DCModule,
+    DcordModule,
     ServerModule,
     DcModule,
   ],

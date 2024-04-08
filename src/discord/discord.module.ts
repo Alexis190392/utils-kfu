@@ -15,6 +15,8 @@ import { StringSelectMenu } from "./components";
 import { DiscordWebhooks } from "./discord.webhooks";
 import { WebadminModule } from "../webadmin/webadmin.module";
 import { Commons } from "../commons/commons";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Channel, Dc, Member, Role, Webhook } from "../dc/entities";
 
 @Module({
   controllers: [DiscordController],
@@ -34,6 +36,15 @@ import { Commons } from "../commons/commons";
       ],
     }),
     WebadminModule,
+    //posible eliminar
+    TypeOrmModule.forFeature([
+      Dc,
+      Member,
+      Role,
+      Webhook,
+      Channel,
+    ])
+
   ],
   providers: [
     DiscordService,
@@ -45,4 +56,4 @@ import { Commons } from "../commons/commons";
   ],
   exports:[DiscordService,]
 })
-export class DCModule {}
+export class DcordModule {}
