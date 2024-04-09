@@ -6,12 +6,14 @@ import {
 } from "necord";
 import { DiscordService } from "./discord.service";
 import { TextDto } from "./dtos/discord.texto.dto";
+import { Modals } from "./components";
 
 @Injectable()
 export class SlashCommands {
 
   constructor(
      private readonly discordService:DiscordService,
+     private readonly modals:Modals,
   ) {
   }
 
@@ -49,6 +51,16 @@ export class SlashCommands {
     await this.discordService.getUsers([interaction]);
     return interaction.reply({content: "Prueba users" });
   }
+
+
+  @SlashCommand({
+    name: 'add-server',
+    description: 'Agregar servidor'
+  })
+  async callModal(@Context() [interaction]){
+     await this.modals.createServer([interaction])
+  }
+
 
 
   //muestra listado de canales de texto

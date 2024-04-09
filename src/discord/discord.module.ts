@@ -11,12 +11,15 @@ import { DiscordService } from './discord.service';
 import { DiscordController } from './discord.controller';
 import { SlashCommands } from "./discord.slash";
 import { DiscordUtils } from "./discord.utils";
-import { StringSelectMenu } from "./components";
+import { Modals, StringSelectMenu } from "./components";
 import { DiscordWebhooks } from "./discord.webhooks";
 import { WebadminModule } from "../webadmin/webadmin.module";
 import { Commons } from "../commons/commons";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Channel, Dc, Member, Role, Webhook } from "../dc/entities";
+import { ServerModule } from "../server/server.module";
+import { ServerService } from "../server/server.service";
+import { Server } from "../server/entities/server.entity";
 
 @Module({
   controllers: [DiscordController],
@@ -37,6 +40,7 @@ import { Channel, Dc, Member, Role, Webhook } from "../dc/entities";
       ],
     }),
     WebadminModule,
+    ServerModule,
     //posible eliminar
     TypeOrmModule.forFeature([
       Dc,
@@ -44,6 +48,7 @@ import { Channel, Dc, Member, Role, Webhook } from "../dc/entities";
       Role,
       Webhook,
       Channel,
+      Server
     ])
 
   ],
@@ -51,7 +56,9 @@ import { Channel, Dc, Member, Role, Webhook } from "../dc/entities";
     DiscordService,
     SlashCommands,
     DiscordUtils,
+    ServerService,
     StringSelectMenu,
+    Modals,
     DiscordWebhooks,
     Commons,
   ],
