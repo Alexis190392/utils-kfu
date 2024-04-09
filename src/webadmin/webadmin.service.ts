@@ -2,8 +2,13 @@ import { Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import * as process from "process";
 import { Commons } from "../commons/commons";
-import { CurrentConsoleLog, CurrentConsoleSend, WebadminConnect } from "./components";
-import { DiscordWebhooks } from "../discord/discord.webhooks";
+import {
+  CurrentConsoleLog,
+  CurrentConsoleSend,
+  WebadminConnect
+} from "./components";
+import { DcWebhooks } from "../dc/dc.webhooks";
+
 
 @Injectable()
 export class WebadminService {
@@ -19,7 +24,7 @@ export class WebadminService {
     private readonly commons: Commons,
     private readonly currentConsoleLog: CurrentConsoleLog,
     private readonly currentConsoleSend: CurrentConsoleSend,
-    private readonly webhooks: DiscordWebhooks,
+    private readonly webhooks: DcWebhooks,
   ) {}
 
   @Cron('*/5 * * * * *')

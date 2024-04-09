@@ -3,7 +3,7 @@ import { InjectDiscord } from "nestjs-discord-webhook";
 import { WebhookClient } from "discord.js";
 
 @Injectable()
-export class DiscordWebhooks {
+export class DcWebhooks {
   constructor(
     @InjectDiscord() private readonly discord: WebhookClient,
   ) {}

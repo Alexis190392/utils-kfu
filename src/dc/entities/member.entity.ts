@@ -1,4 +1,8 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+} from "typeorm";
 import { Role } from "./role.entity";
 
 @Entity()

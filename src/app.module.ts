@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from "@nestjs/config";
+import * as process from "process";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Commons } from './commons/commons';
-import { DcordModule } from "./discord/discord.module";
 import { ServerModule } from './server/server.module';
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { DcModule } from './dc/dc.module';
-import * as process from "process";
+
 
 @Module({
   imports: [
@@ -24,7 +24,6 @@ import * as process from "process";
       synchronize: true, //en prod va en false
 
     }),
-    DcordModule,
     ServerModule,
     DcModule,
   ],

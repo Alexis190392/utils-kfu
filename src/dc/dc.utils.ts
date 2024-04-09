@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class DiscordUtils{
+export class DcUtils {
 
   filterTypeChannels(list: { name: string; type: number;}[], type: number){
     const listNameChannels : string[] = [];

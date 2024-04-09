@@ -7,8 +7,9 @@ import { WebadminController } from './webadmin.controller';
 import { Commons } from "../commons/commons";
 import { CurrentConsoleLog,
         CurrentConsoleSend,
-        WebadminConnect } from "./components";
-import { DiscordWebhooks } from "../discord/discord.webhooks";
+        WebadminConnect,
+} from "./components";
+import { DcWebhooks } from "../dc/dc.webhooks";
 
 
 @Module({
@@ -23,7 +24,7 @@ import { DiscordWebhooks } from "../discord/discord.webhooks";
     CurrentConsoleLog,
     WebadminConnect,
     CurrentConsoleSend,
-    DiscordWebhooks,
+    DcWebhooks,
   ],
   exports: [
     WebadminService,

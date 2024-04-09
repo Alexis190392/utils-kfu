@@ -4,15 +4,16 @@ import {
   SlashCommand,
   SlashCommandContext, StringOption
 } from "necord";
-import { DiscordService } from "./discord.service";
-import { TextDto } from "./dtos/discord.texto.dto";
+
 import { Modals } from "./components";
+import { DcService } from "./dc.service";
+import { TextDto } from "./dto/discord.texto.dto";
 
 @Injectable()
 export class SlashCommands {
 
   constructor(
-     private readonly discordService:DiscordService,
+     private readonly discordService:DcService,
      private readonly modals:Modals,
   ) {
   }
