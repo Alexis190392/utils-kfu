@@ -13,7 +13,7 @@ import { TextDto } from "./dto/discord.texto.dto";
 export class SlashCommands {
 
   constructor(
-     private readonly discordService:DcService,
+     private readonly dcService:DcService,
      private readonly modals:Modals,
   ) {
   }
@@ -31,7 +31,7 @@ export class SlashCommands {
     description: 'Enviar mensaje al servidor'
   })
   async onSend(@Context() [interaction]: SlashCommandContext, @Options() { text }: TextDto) {
-    const response=  await this.discordService.sendMessage(text, [interaction])
+    const response=  await this.dcService.sendMessage(text, [interaction])
     return interaction.reply({content: response });
   }
 
@@ -40,7 +40,7 @@ export class SlashCommands {
     description: 'Extraer roles'
   })
   async onRole(@Context() [interaction]){
-    await this.discordService.getRoles([interaction]);
+    await this.dcService.getRoles([interaction]);
     return interaction.reply({content: "Prueba rol" });
   }
 
@@ -49,7 +49,7 @@ export class SlashCommands {
     description: 'Extraer users'
   })
   async onUsers(@Context() [interaction]){
-    await this.discordService.getUsers([interaction]);
+    await this.dcService.getUsers([interaction]);
     return interaction.reply({content: "Prueba users" });
   }
 
@@ -58,11 +58,18 @@ export class SlashCommands {
     name: 'add-server',
     description: 'Agregar servidor'
   })
-  async callModal(@Context() [interaction]){
+  async onServers(@Context() [interaction]){
      await this.modals.createServer([interaction])
   }
 
 
+  @SlashCommand({
+    name: 'add-admin',
+    description: 'Agregar permisos admin'
+  })
+  async onSetModeratos(@Context() [interaction]){
+    await this.dcService.selectModerator([interaction])
+  }
 
   //muestra listado de canales de texto
   // @SlashCommand({

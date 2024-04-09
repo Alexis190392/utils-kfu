@@ -1,21 +1,22 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Context } from "necord";
+import { Context, StringSelect } from "necord";
 
 import { Commons } from "../commons/commons";
-import { Member, Role } from "./entities";
+import { Member, Moderator, Role } from "./entities";
 import { CreateRoleDto } from "./dto/create-role.dto";
 import { WebadminService } from "../webadmin/webadmin.service";
+import { StringSelectMenu } from "./components";
+import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 
 @Injectable()
 export class DcService {
   private readonly logger = new Logger('DiscordService')
-  //TODO cambiar por lo de la bd
-   private readonly ROLES : string = "Moderador,WM" //process.env.ROLE_MODERATOR;
   constructor(
     private readonly webadminService: WebadminService,
     private readonly commons :Commons,
+    private readonly selectMenu:StringSelectMenu,
 
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
@@ -23,20 +24,22 @@ export class DcService {
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
 
+    @InjectRepository(Moderator)
+    private readonly moderatorRepository: Repository<Moderator>,
+
   ) {}
 
-  async sendMessage(text:string,@Context() [interaction]){
-    const allows= this.commons.splitLines(this.ROLES);
+  private async verifyModerator(@Context() [interaction]) {
+    const allows= await this.getModerators();
     const member = await interaction.member;
     const roles = member.roles.cache.map(role => role.name);
 
-    console.log(allows);
-    console.log(roles);
-    let verify = false;
+    let verify : boolean = false;
 
     for (const allow of allows) {
       for (const role of roles) {
-        if (allow === role){
+        if (allow.name === role){
+          console.log(allow.name);
           verify = true;
           break;
         }
@@ -44,6 +47,10 @@ export class DcService {
           break;
       }
     }
+    return verify;
+  }
+  async sendMessage(text:string,@Context() [interaction]){
+    const verify: boolean = await this.verifyModerator([interaction]);
 
     if (verify){
       await this.webadminService.sendMessage(text);
@@ -53,21 +60,19 @@ export class DcService {
     }
   }
 
-
   async getRoles(@Context() [interaction]){
-    const roles = await interaction.guild.roles.fetch();
+    const rolesDC = await interaction.guild.roles.fetch();
 
-    roles.forEach(role => {
+    const roles=[];
+
+    rolesDC.forEach(role => {
       const roleAdd = new CreateRoleDto();
       roleAdd.id = role.id;
       roleAdd.name = role.name;
-      try {
-        const roleSave = this.roleRepository.create(roleAdd);
-        this.roleRepository.save(roleSave);
-      } catch (e){
-        this.logger.error(`No se pudo agregar el rol: ${roleAdd.name}`)
-      }
+      roles.push(roleAdd)
     })
+
+    return roles;
   }
 
   async getUsers(@Context() [interaction]){
@@ -107,5 +112,75 @@ export class DcService {
     const timeDifference = currentDate.getTime() - value.getTime();
     return Math.floor(timeDifference / (365.25 * 24 * 60 * 60 * 1000));
   }
+
+  private async addModerator(){}
+
+
+  @StringSelect('SELECT_MODERATOR')
+  async selectModerator(@Context() [interaction]){
+    const verify: boolean = await this.verifyModerator([interaction]);
+
+    if (!verify)
+      return interaction.reply({content: "No tiene privilegios para este comando" });
+
+    const moderator= new Moderator();
+    const roles = await this.getRoles([interaction]);
+
+    const stringSelect = new StringSelectMenuBuilder();
+    stringSelect.setCustomId('moderators')
+    stringSelect.setPlaceholder('Selecciona una opción')
+
+    for (const role of roles) {
+      stringSelect.addOptions(
+        new StringSelectMenuOptionBuilder()
+          .setLabel(role.name)
+          .setValue(role.name)
+      );
+    }
+
+    const row = new ActionRowBuilder().addComponents(stringSelect);
+
+    const response = await interaction.reply({
+      content: 'Elija un rol para permitir uso del bot en forma de moderador.',
+      components: [row],
+    });
+
+    const collectorFilter = ({ user }) => user.id === interaction.user.id;
+    try {
+      const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 60000 });
+      const selectedValues = confirmation.values;
+
+      if (selectedValues.length > 0) {
+        const selectedValue = selectedValues[0];
+
+        moderator.name = selectedValue;
+
+        const moderatorSave = this.moderatorRepository.create(moderator);
+        await this.moderatorRepository.save(moderatorSave);
+
+        await confirmation.update({ content: `Se añadió permisos de uso a: ${selectedValue}`,components: []});
+      }
+
+    }catch (e){
+      const content = this.codeError(e.code,moderator.name)
+      await response.edit({content:`${content}`,components: []})
+    }
+
+  }
+
+  private async getModerators(){
+    return await this.moderatorRepository.find();
+  }
+
+  private codeError(code:string, value:string){
+    switch (code) {
+      case '23505':
+        return `El rol '${value}' ya se encuentra añadido.`;
+      case 'InteractionCollectorError':
+        return 'Tiempo de respuesta agotado. No se ha seleccionado una opción.'
+
+    }
+  }
+
 }
 
