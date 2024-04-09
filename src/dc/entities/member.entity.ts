@@ -1,10 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Role } from "./role.entity";
 
 @Entity()
 export class Member{
 
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn("text", {unique:true})
   id : string;
 
   @Column('text')
@@ -13,25 +13,25 @@ export class Member{
   @Column('text')
   discriminator : string;
 
-  @Column('text')
+  @Column('text',{ nullable: true })
   globalName : string;
 
   @Column('text')
   avatarHash : string;
 
-  @Column('text')
+  @Column('text',{ nullable: true })
   avatarDecorationHash : string;
 
-  @Column('text')
+  @Column('text',{ nullable: true })
   avatarUrl : string;
 
-  @Column('text')
+  @Column('text',{ nullable: true })
   bannerHash : string;
 
-  @Column('text')
+  @Column('text',{ nullable: true })
   bannerUrl : string;
 
-  @Column('text')
+  @Column('text',{ nullable: true })
   accentColor : string;
 
   @Column('text')
@@ -49,11 +49,7 @@ export class Member{
   @Column('numeric')
   timeInServer : number;
 
-  @OneToMany(
-    ()=> Role,
-    (role) => role.member,
-    {cascade:true}
-  )
+  @Column("text",{array:true, default:[]})
   roles : Role[];
 
 }

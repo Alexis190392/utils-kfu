@@ -32,7 +32,8 @@ import { Channel, Dc, Member, Role, Webhook } from "../dc/entities";
         IntentsBitField.Flags.Guilds,
         IntentsBitField.Flags.DirectMessages,
         IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.GuildIntegrations
+        IntentsBitField.Flags.GuildIntegrations,
+        IntentsBitField.Flags.GuildMembers
       ],
     }),
     WebadminModule,

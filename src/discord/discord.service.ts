@@ -4,9 +4,10 @@ import { Context } from "necord";
 import * as process from "process";
 import { Commons } from "../commons/commons";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Role } from "../dc/entities";
+import { Member, Role } from "../dc/entities";
 import { Repository } from "typeorm";
 import { CreateRoleDto } from "../dc/dto/create-role.dto";
+import { CreateMemberDto } from "../dc/dto/create-member.dto";
 
 @Injectable()
 export class DiscordService {
@@ -18,7 +19,11 @@ export class DiscordService {
     private readonly commons :Commons,
 
     @InjectRepository(Role)
-    private readonly roleRepository: Repository<Role>
+    private readonly roleRepository: Repository<Role>,
+
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
+
   ) {}
 
   async sendMessage(text:string,@Context() [interaction]){
@@ -66,6 +71,41 @@ export class DiscordService {
     })
   }
 
+  async getUsers(@Context() [interaction]){
+    const members = await interaction.guild.members.fetch();
 
+    for (const member of members.values()) {
+      const memberAdd = new Member();
+      memberAdd.id = member.user.id;
+      memberAdd.username= member.user.username;
+      memberAdd.discriminator = member.user.discriminator;
+      memberAdd.globalName = member.user.globalName;
+      memberAdd.avatarHash = member.user.avatar;
+      memberAdd.bot = member.user.bot;
+      memberAdd.system = member.user.system;
+      memberAdd.bannerHash = member.user.banner;
+      memberAdd.accentColor = member.user.accentColor;
+      memberAdd.flags = member.user.flags;
+      memberAdd.avatarDecorationHash = member.user.avatarDecoration;
+      memberAdd.joinedAt = member.joinedAt;
+      memberAdd.timeInServer = this.timeDifference(member.joinedAt);
 
+      memberAdd.roles = [];
+      for (const role of member.roles.cache.values()) {
+        memberAdd.roles.push(role.name);
+      }
+
+      try {
+        await this.memberRepository.save(memberAdd);
+      } catch (e){
+        this.logger.error(`No se pudo agregar el usuario: ${memberAdd.username}`)
+      }
+    }
+  }
+
+  private timeDifference(value: Date){
+    const currentDate = new Date();
+    const timeDifference = currentDate.getTime() - value.getTime();
+    return Math.floor(timeDifference / (365.25 * 24 * 60 * 60 * 1000));
+  }
 }
