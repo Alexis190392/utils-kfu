@@ -13,10 +13,12 @@ export class Embeds{
 
   async listModerators([interaction], list:Moderator[]){
 
-    const name = interaction.guild.name;
-    const color = this.utils.decimalToHex(await interaction.member.user.accentColor);
-    const icon = `https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.webp`;
-    const iconUser = `https://cdn.discordapp.com/avatars/${interaction.member.user.id}/${interaction.member.user.avatar}.webp`;
+    const member = await interaction.member;
+    const guild = await interaction.guild;
+    const name = guild.name;
+    const color = this.utils.decimalToHex(member.user.accentColor);
+    const icon = `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp`;
+    const iconUser = `https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.webp`;
     let message = '';
     for (const mod of list) {
       message =`${message}- ${mod.name}\n`
@@ -27,6 +29,11 @@ export class Embeds{
     embed.setThumbnail(iconUser);
     embed.addFields(
       { name: 'Roles permitidos Admin:', value: message },
+      { name: '\u200B', value: '\u200B'},
+      { name: '/admin', value: `Listar roles permitidos`},
+      { name: '/set-admin', value: `Permitir nuevo rol`},
+      { name: '/del-admin', value: `Negar permisos rol`}
+
     );
 
     embed.setTimestamp();

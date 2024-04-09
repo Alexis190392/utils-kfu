@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
 @Injectable()
 export class DcUtils {
-
+  private readonly logger = new Logger('DcUtils');
   filterTypeChannels(list: { name: string; type: number;}[], type: number){
     const listNameChannels : string[] = [];
 
@@ -37,7 +37,14 @@ export class DcUtils {
   }
 
   decimalToHex(decimal){
-    let hex = decimal.toString(16).toUpperCase();
-    return  hex.padStart(6, '0');
+
+    try {
+      let hex = decimal.toString(16).toUpperCase();
+      return  hex.padStart(6, '0');
+    } catch (e){
+      this.logger.warn(`${e.message} - Set default #D8D8D8`)
+      return  '#D8D8D8';
+    }
+
   }
 }

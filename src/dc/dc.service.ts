@@ -40,7 +40,6 @@ export class DcService {
     for (const allow of allows) {
       for (const role of roles) {
         if (allow.name === role){
-          console.log(allow.name);
           verify = true;
           break;
         }
@@ -141,8 +140,6 @@ export class DcService {
       );
     }
 
-
-
     const row = new ActionRowBuilder().addComponents(stringSelect);
 
     const response = await interaction.reply({
@@ -177,10 +174,22 @@ export class DcService {
     return await this.moderatorRepository.find();
   }
 
+  async deleteModerator(name:string){
+    try {
+      await this.moderatorRepository.delete({name:name});
+      return `El rol \`${name}\` ya no cuenta con permisos.`;
+    }catch (e) {
+      this.logger.error(e.message);
+      return `Ocurrio un error al eliminar el rol \`${name}\``;
+    }
+
+  }
+
+
   private codeError(code:string, value:string){
     switch (code) {
       case '23505':
-        return `El rol '${value}' ya se encuentra añadido.`;
+        return `El rol \`${value}\` ya se encuentra añadido.\n \`\`\`/admin para ver lista de permitidos.\`\`\``;
       case 'InteractionCollectorError':
         return 'Tiempo de respuesta agotado. No se ha seleccionado una opción.'
 

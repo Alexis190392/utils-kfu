@@ -78,6 +78,14 @@ export class SlashCommands {
     await this.dcService.selectModerator([interaction])
   }
 
+  @SlashCommand({
+    name: 'del-admin',
+    description: 'Eliminar permisos admin'
+  })
+  async onDeleteModeratos(@Context() [interaction]){
+    await this.dcService.deleteModerator('Rythm')
+  }
+
   //muestra listado de canales de texto
   // @SlashCommand({
   //   name: 'logs-server',
