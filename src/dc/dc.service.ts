@@ -7,7 +7,7 @@ import { Commons } from "../commons/commons";
 import { Member, Moderator, Role } from "./entities";
 import { CreateRoleDto } from "./dto/create-role.dto";
 import { WebadminService } from "../webadmin/webadmin.service";
-import { StringSelectMenu } from "./components";
+import { Embeds, StringSelectMenu } from "./components";
 import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 
 @Injectable()
@@ -17,6 +17,7 @@ export class DcService {
     private readonly webadminService: WebadminService,
     private readonly commons :Commons,
     private readonly selectMenu:StringSelectMenu,
+    private readonly embed:Embeds,
 
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
@@ -113,8 +114,10 @@ export class DcService {
     return Math.floor(timeDifference / (365.25 * 24 * 60 * 60 * 1000));
   }
 
-  private async addModerator(){}
-
+  async SeeModeratos(@Context() [interaction]) {
+    const allows= await this.getModerators();
+    const embed = this.embed.listModerators([interaction],allows);
+  }
 
   @StringSelect('SELECT_MODERATOR')
   async selectModerator(@Context() [interaction]){
@@ -137,6 +140,8 @@ export class DcService {
           .setValue(role.name)
       );
     }
+
+
 
     const row = new ActionRowBuilder().addComponents(stringSelect);
 

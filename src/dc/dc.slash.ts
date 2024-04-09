@@ -62,9 +62,16 @@ export class SlashCommands {
      await this.modals.createServer([interaction])
   }
 
+  @SlashCommand({
+    name: 'admin',
+    description: 'Estado de moderadores'
+  })
+  async onSeeModeratos(@Context() [interaction]){
+    await this.dcService.SeeModeratos([interaction])
+  }
 
   @SlashCommand({
-    name: 'add-admin',
+    name: 'set-admin',
     description: 'Agregar permisos admin'
   })
   async onSetModeratos(@Context() [interaction]){

@@ -9,7 +9,7 @@ import { IntentsBitField } from "discord.js";
 
 import { Commons } from "../commons/commons";
 import { Channel, Dc, Member, Moderator, Role, Webhook } from "./entities";
-import { Modals, StringSelectMenu } from "./components";
+import { Embeds, Modals, StringSelectMenu } from "./components";
 import { WebadminModule } from "../webadmin/webadmin.module";
 import { ServerModule } from "../server/server.module";
 import { Server } from "../server/entities/server.entity";
@@ -59,6 +59,7 @@ import { DcUtils } from "./dc.utils";
     ServerService,
     StringSelectMenu,
     Modals,
+    Embeds,
     DcWebhooks,
     Commons,
   ],

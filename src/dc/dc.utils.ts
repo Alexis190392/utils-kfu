@@ -35,4 +35,9 @@ export class DcUtils {
     }
     return listChannel;
   }
+
+  decimalToHex(decimal){
+    let hex = decimal.toString(16).toUpperCase();
+    return  hex.padStart(6, '0');
+  }
 }
