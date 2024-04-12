@@ -4,7 +4,7 @@ import { EmbedBuilder } from "discord.js";
 import { Moderator } from "../entities";
 
 @Injectable()
-export class Embeds{
+export class ComponentsEmbeds{
 
   constructor(
     private readonly utils:DcUtils,

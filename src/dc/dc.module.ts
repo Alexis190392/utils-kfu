@@ -8,8 +8,12 @@ import { DiscordModule } from "nestjs-discord-webhook";
 import { IntentsBitField } from "discord.js";
 
 import { Commons } from "../commons/commons";
-import { Channel, Dc, Member, Moderator, Role, Webhook } from "./entities";
-import { Embeds, Modals, StringSelectMenu } from "./components";
+import {
+  Dc,
+  Member,
+  Moderator,
+  Role,
+} from "./entities";
 import { WebadminModule } from "../webadmin/webadmin.module";
 import { ServerModule } from "../server/server.module";
 import { Server } from "../server/entities/server.entity";
@@ -19,6 +23,7 @@ import { DcController } from './dc.controller';
 import { SlashCommands } from "./dc.slash";
 import { DcWebhooks } from "./dc.webhooks";
 import { DcUtils } from "./dc.utils";
+import { ComponentsEmbeds, ComponentsModals, ComponentsStringSelect, ComponentsWebhook } from "./components";
 
 
 @Module({
@@ -46,8 +51,6 @@ import { DcUtils } from "./dc.utils";
       Dc,
       Member,
       Role,
-      Webhook,
-      Channel,
       Server,
       Moderator,
     ])
@@ -57,9 +60,10 @@ import { DcUtils } from "./dc.utils";
     SlashCommands,
     DcUtils,
     ServerService,
-    StringSelectMenu,
-    Modals,
-    Embeds,
+    ComponentsStringSelect,
+    ComponentsModals,
+    ComponentsEmbeds,
+    ComponentsWebhook,
     DcWebhooks,
     Commons,
   ],

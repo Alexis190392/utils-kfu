@@ -1,3 +1,4 @@
-export { Embeds } from "./components.embeds";
-export { Modals } from "./components.modals";
-export { StringSelectMenu } from "./components.string-select";
+export { ComponentsWebhook } from "./components.webhook";
+export { ComponentsEmbeds } from "./components.embeds";
+export { ComponentsModals } from "./components.modals";
+export { ComponentsStringSelect } from "./components.string-select";

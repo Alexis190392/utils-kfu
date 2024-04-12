@@ -5,7 +5,7 @@ import {
   SlashCommandContext, StringOption
 } from "necord";
 
-import { Modals } from "./components";
+import { ComponentsModals } from "./components";
 import { DcService } from "./dc.service";
 import { TextDto } from "./dto/discord.texto.dto";
 
@@ -14,7 +14,7 @@ export class SlashCommands {
 
   constructor(
      private readonly dcService:DcService,
-     private readonly modals:Modals,
+     private readonly modals:ComponentsModals,
   ) {
   }
 
@@ -24,6 +24,15 @@ export class SlashCommands {
   })
   async onPing(@Context() [interaction]: SlashCommandContext) {
     return interaction.reply({ content: 'Pong!' });
+  }
+
+  @SlashCommand({
+    name: 'setup',
+    description: 'setup'
+  })
+  async onSetup(@Context() [interaction]){
+    //TODO
+    return interaction.reply({content: 'setup'})
   }
 
   @SlashCommand({
@@ -63,6 +72,19 @@ export class SlashCommands {
   }
 
   @SlashCommand({
+    name: 'add-webhook',
+    description: 'Agregar webhook de canal para recibir notificaciones'
+  })
+  async onAddWebhook(@Context() [interaction]){
+    try {
+      await this.dcService.addWhebhook([interaction]);
+    } catch (e) {
+      return interaction.reply({content: "No hay servers configurados" });
+    }
+
+  }
+
+  @SlashCommand({
     name: 'admin',
     description: 'Estado de moderadores'
   })
@@ -85,6 +107,49 @@ export class SlashCommands {
   async onDeleteModeratos(@Context() [interaction]){
     await this.dcService.deleteModerator('Rythm')
   }
+
+  @SlashCommand({
+    name: 'info',
+    description: 'info del lugar'
+  })
+  async onInfo(@Context() [interaction]){
+    //info general de interaccion:
+    // console.log(await interaction)
+
+    //info general del servidor:
+    // console.log(await interaction.guild)
+     console.log(await interaction.guild.channels.fetch()) //listado de canales
+    // console.log(await interaction.guild.members.fetch()) //listado de miembros del servidor y sus detalles
+
+
+    //info del canal:
+    // console.log(await interaction.channel) //general del canal actual
+    // console.log(await interaction.channel.id) //id del canal actual
+    // console.log(await interaction.member.user) //detalles del usuario que ejecuta comando
+
+
+
+    // await interaction.guild.channels.create({
+    //   name:'soy un canal nuevo',
+    //   type: 0, // Puedes cambiarlo a (0 texto, 2 voz, 4 categoria)
+    //   // parentId: '123', //para categoria
+    //
+    // });
+
+
+    //  const channel = await interaction.guild.channels.cache.get('1228181687951822940');
+    //
+    //
+    // await channel.edit({
+    //   name: 'lalala 🛑' ,
+    //   // topic: 'nuevo_tema_del_canal',
+    //   // Otras propiedades que deseas modificar
+    // });
+
+    return interaction.reply({content: "Info en logs" });
+  }
+
+
 
   //muestra listado de canales de texto
   // @SlashCommand({

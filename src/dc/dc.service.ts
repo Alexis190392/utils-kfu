@@ -7,17 +7,22 @@ import { Commons } from "../commons/commons";
 import { Member, Moderator, Role } from "./entities";
 import { CreateRoleDto } from "./dto/create-role.dto";
 import { WebadminService } from "../webadmin/webadmin.service";
-import { Embeds, StringSelectMenu } from "./components";
+import { ComponentsEmbeds, ComponentsModals, ComponentsStringSelect, ComponentsWebhook } from "./components";
 import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
+import { Server } from "../server/entities/server.entity";
+import * as url from "url";
 
 @Injectable()
 export class DcService {
   private readonly logger = new Logger('DiscordService')
+
   constructor(
     private readonly webadminService: WebadminService,
-    private readonly commons :Commons,
-    private readonly selectMenu:StringSelectMenu,
-    private readonly embed:Embeds,
+    private readonly commons: Commons,
+    private readonly selectMenu: ComponentsStringSelect,
+    private readonly embed: ComponentsEmbeds,
+    private readonly modals: ComponentsModals,
+    private readonly webhooks: ComponentsWebhook,
 
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
@@ -27,8 +32,10 @@ export class DcService {
 
     @InjectRepository(Moderator)
     private readonly moderatorRepository: Repository<Moderator>,
-
-  ) {}
+    @InjectRepository(Server)
+    private readonly serverRepository: Repository<Server>,
+  ) {
+  }
 
   private async verifyModerator(@Context() [interaction]) {
     const allows= await this.getModerators();
@@ -49,6 +56,7 @@ export class DcService {
     }
     return verify;
   }
+
   async sendMessage(text:string,@Context() [interaction]){
     const verify: boolean = await this.verifyModerator([interaction]);
 
@@ -183,6 +191,93 @@ export class DcService {
       return `Ocurrio un error al eliminar el rol \`${name}\``;
     }
 
+  }
+
+  async addWhebhook(@Context()[interaction]) {
+    const verify: boolean = await this.verifyModerator([interaction]);
+
+    if (!verify)
+      return interaction.reply({ content: "No tiene privilegios para este comando" });
+
+    const server = new Server();
+
+    const stringSelect = new StringSelectMenuBuilder();
+    stringSelect.setCustomId('moderators')
+    stringSelect.setPlaceholder('Selecciona una opción')
+
+    const servers: Server[] = await this.serverRepository.find();
+
+    for (const server of servers) {
+      stringSelect.addOptions(
+        new StringSelectMenuOptionBuilder()
+          .setLabel(server.name)
+          .setValue(server.id)
+      );
+    }
+
+    const row = new ActionRowBuilder().addComponents(stringSelect);
+
+    const response = await interaction.reply({
+      content: 'Elija un servidor.',
+      components: [row],
+    });
+
+    const collectorFilter = ({ user }) => user.id === interaction.user.id;
+    try {
+      const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 240000 });
+      const selectedValues = confirmation.values;
+
+      if (selectedValues.length > 0) {
+        const selectedValue = selectedValues[0];
+        const server = servers.find(server => server.id === selectedValue)
+        console.log('##########################################################################');
+        // const webhooks = await interaction.guild.channels.fetch();
+
+        // const channelID = await interaction.channelId;
+        //
+        // const inter = await interaction;
+
+        // await this.webhooks.create([interaction], "name", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRagew32zCBs8tk1fxr-kM3I_C-8voDZ2lueR8ucnQVjA&s");
+
+        await  this.webhooks.findWebhook([interaction],"1215373200783966318")
+
+
+        // console.log(wh);
+        // console.log("-----------------------------------------------------");
+        // console.log(tk)
+        // console.log("-----------------------------------------------------");
+        // console.log(wh.token)
+
+        // const data = await interaction.guild.channels.fetch();
+        //
+        // // const dataChannel = data;
+        //
+        // for (const datum of data) {
+        //   if (datum[0] === channelID) {
+        //     console.log("****************************************************************");
+        //     // console.log(datum);
+        //   }
+
+        }
+        // for (const webhook of webhooks) {
+        //   console.log(dataChannel);
+        // }
+
+        // await this.modals.addWebhook([interaction],server)
+        //
+        // await interaction.showModal();
+
+        // await this.modals.addWebhook([interaction],server)
+
+        // const moderatorSave = this.moderatorRepository.create(server);
+        // await this.moderatorRepository.save(moderatorSave);
+
+        // await confirmation.update({ content: `Se añadió permisos de uso a: ${selectedValue}`, components: [] });
+      // }
+    } catch (e) {
+      const content = this.codeError(e.code, server.name)
+      await response.edit({ content: `${content}`, components: [] })
+    }
   }
 
 

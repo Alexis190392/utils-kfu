@@ -2,7 +2,7 @@ import { StringSelectMenuBuilder } from "discord.js";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class StringSelectMenu{
+export class ComponentsStringSelect{
 
   create(customId: string, placeholder: string, list: any){
     return  new StringSelectMenuBuilder()

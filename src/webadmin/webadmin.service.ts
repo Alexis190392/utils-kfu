@@ -27,6 +27,7 @@ export class WebadminService {
     private readonly webhooks: DcWebhooks,
   ) {}
 
+  //TODO cron
   @Cron('*/5 * * * * *')
   async cronDataLogs() {
     try {
