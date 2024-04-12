@@ -1,5 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Webhook } from "../../dc/entities";
+import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Server {
@@ -24,17 +23,16 @@ export class Server {
   @Column('text')
   pass : string;
 
+  @Column('text')
+  channelId : string;
+
   @Column('boolean',{
     default: true,
   })
   isActive : boolean;
 
-  @ManyToOne(
-    () => Webhook,
-    (webhook)=> webhook.server,
-    {onDelete: 'CASCADE'}
-  )
-  webhook : Webhook;
+  @Column('text')
+  webhook : string;
 
   @BeforeInsert()
   checkSlugInsert(){
