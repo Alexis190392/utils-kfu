@@ -2,19 +2,19 @@ import { Injectable } from '@nestjs/common';
 import {
   Context, Options,
   SlashCommand,
-  SlashCommandContext, StringOption
+  SlashCommandContext,
 } from "necord";
 
-import { Modals } from "./components";
 import { DcService } from "./dc.service";
 import { TextDto } from "./dto/discord.texto.dto";
+import { ServerServiceDc } from "./services";
 
 @Injectable()
 export class SlashCommands {
 
   constructor(
      private readonly dcService:DcService,
-     private readonly modals:Modals,
+     private readonly server :ServerServiceDc,
   ) {
   }
 
@@ -59,7 +59,7 @@ export class SlashCommands {
     description: 'Agregar servidor'
   })
   async onServers(@Context() [interaction]){
-     await this.modals.createServer([interaction])
+     await this.server.createServer([interaction])
   }
 
   @SlashCommand({

@@ -17,8 +17,8 @@ import { ServerService } from "../server/server.service";
 import { DcService } from './dc.service';
 import { DcController } from './dc.controller';
 import { SlashCommands } from "./dc.slash";
-import { DcWebhooks } from "./dc.webhooks";
 import { DcUtils } from "./dc.utils";
+import { ServerServiceDc, WebhooksService } from "./services";
 
 
 @Module({
@@ -53,13 +53,14 @@ import { DcUtils } from "./dc.utils";
   ],
   providers: [
     DcService,
+    ServerServiceDc,
     SlashCommands,
     DcUtils,
     ServerService,
     StringSelectMenu,
     Modals,
     Embeds,
-    DcWebhooks,
+    WebhooksService,
     Commons,
   ],
   exports:[DcService,]
