@@ -23,6 +23,7 @@ import { ModeratorDcService } from "../moderator-dc/moderator-dc.service";
 import { Moderator } from "../moderator-dc/entities/moderator.entity";
 import { WebadminService } from "../webadmin/webadmin.service";
 import { ModalComponent } from "../server/components/modal.component";
+import { ChannelDcService } from "../channel-dc/channel-dc.service";
 
 @Module({
   controllers: [DcController],
@@ -49,7 +50,8 @@ import { ModalComponent } from "../server/components/modal.component";
     WebhookDcService,
     ModeratorDcService,
     WebadminService,
-    ModalComponent
+    ModalComponent,
+    ChannelDcService,
   ],
   exports:[DcService,]
 })

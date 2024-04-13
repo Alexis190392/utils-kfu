@@ -14,6 +14,7 @@ import { CurrentConsoleLog, CurrentConsoleSend, WebadminConnect } from "../webad
 import { Commons } from "../commons/commons";
 import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
 import { Member } from "../member-dc/entities/member.entity";
+import { ChannelDcService } from "../channel-dc/channel-dc.service";
 
 @Module({
   controllers: [ServerController],
@@ -36,6 +37,7 @@ import { Member } from "../member-dc/entities/member.entity";
     CurrentConsoleLog,
     CurrentConsoleSend,
     WebhookDcService,
+    ChannelDcService,
 
   ],
 })

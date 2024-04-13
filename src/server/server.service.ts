@@ -11,6 +11,8 @@ import { CreateServerDto } from './dto/create-server.dto';
 import { Server } from "./entities/server.entity";
 import { ModalComponent } from "./components/modal.component";
 import { ModeratorDcService } from "../moderator-dc/moderator-dc.service";
+import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
+import { ChannelDcService } from "../channel-dc/channel-dc.service";
 
 @Injectable()
 export class ServerService {
@@ -18,8 +20,12 @@ export class ServerService {
   private readonly logger = new Logger('ServerService');
 
   constructor(
+
     private readonly modalComponent:ModalComponent,
     private readonly moderatorDcService:ModeratorDcService,
+
+    private readonly channelDcService:ChannelDcService,
+    private readonly webhookDcService:WebhookDcService,
 
     @InjectRepository(Server)
     private readonly serverRepository : Repository<Server>,
@@ -58,7 +64,7 @@ export class ServerService {
       return interaction.reply({content: "No tiene privilegios para este comando" });
 
     const modal = await this.modalComponent.newServer([interaction]);
-    await interaction.showModal(modal);
+    const modalMessage = await interaction.showModal(modal);
 
     const filter= (interaction) => interaction.customId === `newServer-${interaction.user.id}`;
 
@@ -71,7 +77,10 @@ export class ServerService {
         const pass = modalInteraction.fields.getTextInputValue('pass');
 
         if (await this.isPresent(ip, port))
-          return interaction.reply({content: `El servido ${ip}:${port} ya se encuentra añadido` });
+          return interaction.reply({content: `El servidor ${ip}:${port} ya se encuentra añadido` });
+
+        const channelId = await this.channelDcService.create([interaction],name,0);
+        const webhookId = await this.webhookDcService.create([interaction],`${name} Logs`,channelId);
 
         const newServer = new CreateServerDto();
         newServer.name = name;
@@ -79,6 +88,8 @@ export class ServerService {
         newServer.port = port;
         newServer.user = user;
         newServer.pass = pass;
+        newServer.channelId = channelId;
+        newServer.webhook = webhookId;
 
         const server = await this.create(newServer);
         this.logger.log(`New server: ${server.name}  - ID: ${server.id}`)
@@ -91,7 +102,7 @@ export class ServerService {
       });
   }
   
-  async isPresent(ip:string , port:string){
+  private async isPresent(ip:string , port:string){
     const server = await this.serverRepository.findOneBy({ip});
     if (!server)
       return false;

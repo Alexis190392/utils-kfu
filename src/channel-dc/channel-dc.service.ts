@@ -8,11 +8,13 @@ export class ChannelDcService {
     if (!parentId)
       parentId = null;
 
-    await interaction.guild.channels.create({
+    const channel = await interaction.guild.channels.create({
       name: name,
       type: type, // Puedes cambiarlo a (0 texto, 2 voz, 4 categoria)
       parent: parentId, //para categoria
     });
+
+    return channel.id;
 
   }
 

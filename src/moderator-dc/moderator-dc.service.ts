@@ -24,8 +24,13 @@ export class ModeratorDcService {
 
 
   async verifyModerator([interaction]) {
-    const allows= await this.getModerators();
+    const ownerId = await interaction.channel.guild.ownerId;
     const member = await interaction.member;
+
+    if (ownerId === member.id)
+      return true;
+
+    const allows= await this.getModerators();
     const roles = member.roles.cache.map(role => role.name);
 
     let verify : boolean = false;

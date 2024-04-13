@@ -13,7 +13,7 @@ export class ModalComponent{
   async newServer([interaction]){
     const modal = new ModalBuilder()
       .setCustomId(`newServer-${interaction.user.id}`)
-      .setTitle('Agregar server');
+      .setTitle('Agregar server - WebAdmin');
 
     const name = new TextInputBuilder()
       .setCustomId('name')

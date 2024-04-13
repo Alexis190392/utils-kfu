@@ -100,18 +100,12 @@ export class SlashCommands {
     // await  this.channelService.editName([interaction],'1228222659054141503', '💔-lalala')
     // await  this.channelService.editName([interaction],'1228222659054141503', '💚-lalala')
 
-    await this.webhooks.create([interaction],"PruebaWH4")
+   // await this.webhooks.create([interaction],"PruebaWH4")
+    const aver = await interaction.member.id;
+    console.log(aver);
 
     // console.log(await interaction.guild.channels.fetch())
   }
 
-  //muestra listado de canales de texto
-  // @SlashCommand({
-  //   name: 'logs-server',
-  //   description: 'Select a text channel for server logs',
-  // })
-  // public async onLogsServer(@Context() [interaction]: SlashCommandContext){
-  //   await this.discordService.onLogsServer([interaction]);
-  // }
 
 }
