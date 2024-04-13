@@ -7,14 +7,15 @@ import {
 
 import { DcService } from "./dc.service";
 import { TextDto } from "./dto/discord.texto.dto";
-import { ServerServiceDc } from "./services";
+import { ChannelService, ServerServiceDc } from "./services";
 
 @Injectable()
 export class SlashCommands {
 
   constructor(
      private readonly dcService:DcService,
-     private readonly server :ServerServiceDc,
+     private readonly server : ServerServiceDc,
+     private readonly channelService: ChannelService
   ) {
   }
 
@@ -84,6 +85,18 @@ export class SlashCommands {
   })
   async onDeleteModeratos(@Context() [interaction]){
     await this.dcService.deleteModerator('Rythm')
+  }
+
+  @SlashCommand({
+    name: 'test',
+    description: 'Eliminar despues'
+  })
+  async onTest(@Context() [interaction]){
+
+     // await this.channelService.create([interaction],"Nueva cat6",0,'1228219088246014032')
+    // await  this.channelService.editName([interaction],'1228222659054141503', '💔-lalala')
+    await  this.channelService.editName([interaction],'1228222659054141503', '💚-lalala')
+    console.log(await interaction.guild.channels.fetch())
   }
 
   //muestra listado de canales de texto

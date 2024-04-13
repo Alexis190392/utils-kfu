@@ -18,7 +18,7 @@ import { DcService } from './dc.service';
 import { DcController } from './dc.controller';
 import { SlashCommands } from "./dc.slash";
 import { DcUtils } from "./dc.utils";
-import { ServerServiceDc, WebhooksService } from "./services";
+import { ChannelService, ServerServiceDc, WebhooksService } from "./services";
 
 
 @Module({
@@ -54,6 +54,7 @@ import { ServerServiceDc, WebhooksService } from "./services";
   providers: [
     DcService,
     ServerServiceDc,
+    ChannelService,
     SlashCommands,
     DcUtils,
     ServerService,
