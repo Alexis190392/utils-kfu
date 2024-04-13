@@ -7,16 +7,16 @@ import {
 
 import { DcService } from "./dc.service";
 import { TextDto } from "./dto/discord.texto.dto";
-import { ServerServiceDc } from "./services/server.service";
 import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
 import { ModeratorDcService } from "../moderator-dc/moderator-dc.service";
+import { ServerService } from "../server/server.service";
 
 @Injectable()
 export class SlashCommands {
 
   constructor(
      private readonly dcService:DcService,
-     private readonly server : ServerServiceDc,
+     private readonly server : ServerService,
      private readonly webhooks : WebhookDcService,
      private readonly moderatorService:ModeratorDcService,
   ) {

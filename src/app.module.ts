@@ -12,6 +12,9 @@ import { ChannelDcModule } from './channel-dc/channel-dc.module';
 import { WebhookDcModule } from './webhook-dc/webhook-dc.module';
 import { ModeratorDcModule } from './moderator-dc/moderator-dc.module';
 import { MemberDcModule } from './member-dc/member-dc.module';
+import { DiscordModule } from "nestjs-discord-webhook";
+import { NecordModule } from "necord";
+import { IntentsBitField } from "discord.js";
 
 
 @Module({
@@ -26,7 +29,19 @@ import { MemberDcModule } from './member-dc/member-dc.module';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       synchronize: true, //en prod va en false
-
+    }),
+    DiscordModule.forRoot({
+      url: process.env.WEBHOOK_LOGS_URL,
+    }),
+    NecordModule.forRoot({
+      token: process.env.DISCORD_TOKEN,
+      intents:[
+        IntentsBitField.Flags.Guilds,
+        IntentsBitField.Flags.DirectMessages,
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.GuildIntegrations,
+        IntentsBitField.Flags.GuildMembers
+      ],
     }),
     ServerModule,
     DcModule,

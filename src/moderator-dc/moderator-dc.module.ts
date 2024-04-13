@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ModeratorDcService } from './moderator-dc.service';
 import { ModeratorDcController } from './moderator-dc.controller';
 import { WebadminService } from "../webadmin/webadmin.service";
-import { Embeds } from "../dc/components";
 import { DcService } from "../dc/dc.service";
 import { DcUtils } from "../dc/dc.utils";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -23,7 +22,6 @@ import { Member } from "../member-dc/entities/member.entity";
   providers: [
     ModeratorDcService,
     WebadminService,
-    Embeds,
     DcService,
     DcUtils,
     WebadminConnect,

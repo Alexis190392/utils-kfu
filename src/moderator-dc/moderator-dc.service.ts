@@ -1,6 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { WebadminService } from "../webadmin/webadmin.service";
-import { Embeds } from "../dc/components";
 import { DcService } from "../dc/dc.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -15,7 +14,6 @@ export class ModeratorDcService {
 
   constructor(
     private readonly webadminService: WebadminService,
-    private readonly embed:Embeds,
     private readonly dcService:DcService,
     private readonly utils:DcUtils,
 

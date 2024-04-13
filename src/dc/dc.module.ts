@@ -15,34 +15,22 @@ import { DcService } from "./dc.service";
 import { SlashCommands } from "./dc.slash";
 import { DcUtils } from "./dc.utils";
 import { ServerService } from "../server/server.service";
-import { Embeds, Modals, StringSelectMenu } from "./components";
+import { Modals, StringSelectMenu } from "./components";
 import { Commons } from "../commons/commons";
 import { Member } from "../member-dc/entities/member.entity";
-import { ServerServiceDc } from "./services/server.service";
 import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
 import { ModeratorDcService } from "../moderator-dc/moderator-dc.service";
 import { Moderator } from "../moderator-dc/entities/moderator.entity";
+import { WebadminService } from "../webadmin/webadmin.service";
+import { ModalComponent } from "../server/components/modal.component";
 
 @Module({
   controllers: [DcController],
   imports:[
-    ConfigModule.forRoot(),
-    ScheduleModule.forRoot(),
-    DiscordModule.forRoot({
-      url: process.env.WEBHOOK_LOGS_URL,
-    }),
-    NecordModule.forRoot({
-      token: process.env.DISCORD_TOKEN,
-      intents:[
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.DirectMessages,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.GuildIntegrations,
-        IntentsBitField.Flags.GuildMembers
-      ],
-    }),
+    // ConfigModule.forRoot(),
+    // ScheduleModule.forRoot(),
     WebadminModule,
-    ServerModule,
+    // ServerModule,
     //posible eliminar
     TypeOrmModule.forFeature([
       Server,
@@ -57,11 +45,11 @@ import { Moderator } from "../moderator-dc/entities/moderator.entity";
     ServerService,
     StringSelectMenu,
     Modals,
-    Embeds,
     Commons,
-    ServerServiceDc,
     WebhookDcService,
     ModeratorDcService,
+    WebadminService,
+    ModalComponent
   ],
   exports:[DcService,]
 })
