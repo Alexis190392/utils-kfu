@@ -9,7 +9,7 @@ import { CurrentConsoleLog,
         CurrentConsoleSend,
         WebadminConnect,
 } from "./components";
-import { WebhooksService } from "../dc/services";
+import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
 
 
 @Module({
@@ -24,7 +24,7 @@ import { WebhooksService } from "../dc/services";
     CurrentConsoleLog,
     WebadminConnect,
     CurrentConsoleSend,
-    WebhooksService,
+    WebhookDcService,
   ],
   exports: [
     WebadminService,

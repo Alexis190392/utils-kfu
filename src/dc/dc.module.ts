@@ -6,20 +6,22 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { NecordModule } from "necord";
 import { DiscordModule } from "nestjs-discord-webhook";
 import { IntentsBitField } from "discord.js";
-
-import { Commons } from "../commons/commons";
-import { Channel, Dc, Member, Moderator, Role } from "./entities";
-import { Embeds, Modals, StringSelectMenu } from "./components";
+import { DcController } from "./dc.controller";
 import { WebadminModule } from "../webadmin/webadmin.module";
 import { ServerModule } from "../server/server.module";
 import { Server } from "../server/entities/server.entity";
-import { ServerService } from "../server/server.service";
-import { DcService } from './dc.service';
-import { DcController } from './dc.controller';
+import { DcService } from "./dc.service";
+
 import { SlashCommands } from "./dc.slash";
 import { DcUtils } from "./dc.utils";
-import { ChannelService, ServerServiceDc, WebhooksService } from "./services";
-
+import { ServerService } from "../server/server.service";
+import { Embeds, Modals, StringSelectMenu } from "./components";
+import { Commons } from "../commons/commons";
+import { Member } from "../member-dc/entities/member.entity";
+import { ServerServiceDc } from "./services/server.service";
+import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
+import { ModeratorDcService } from "../moderator-dc/moderator-dc.service";
+import { Moderator } from "../moderator-dc/entities/moderator.entity";
 
 @Module({
   controllers: [DcController],
@@ -43,26 +45,23 @@ import { ChannelService, ServerServiceDc, WebhooksService } from "./services";
     ServerModule,
     //posible eliminar
     TypeOrmModule.forFeature([
-      Dc,
-      Member,
-      Role,
-      Channel,
       Server,
+      Member,
       Moderator,
     ])
   ],
   providers: [
     DcService,
-    ServerServiceDc,
-    ChannelService,
     SlashCommands,
     DcUtils,
     ServerService,
     StringSelectMenu,
     Modals,
     Embeds,
-    WebhooksService,
     Commons,
+    ServerServiceDc,
+    WebhookDcService,
+    ModeratorDcService,
   ],
   exports:[DcService,]
 })

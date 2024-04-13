@@ -8,6 +8,10 @@ import { AppService } from './app.service';
 import { Commons } from './commons/commons';
 import { ServerModule } from './server/server.module';
 import { DcModule } from './dc/dc.module';
+import { ChannelDcModule } from './channel-dc/channel-dc.module';
+import { WebhookDcModule } from './webhook-dc/webhook-dc.module';
+import { ModeratorDcModule } from './moderator-dc/moderator-dc.module';
+import { MemberDcModule } from './member-dc/member-dc.module';
 
 
 @Module({
@@ -26,6 +30,10 @@ import { DcModule } from './dc/dc.module';
     }),
     ServerModule,
     DcModule,
+    ChannelDcModule,
+    WebhookDcModule,
+    ModeratorDcModule,
+    MemberDcModule,
   ],
   controllers: [AppController],
   providers: [AppService, Commons],

@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ServerService } from "../../server/server.service";
 import {
   ActionRowBuilder,
@@ -9,13 +9,13 @@ import {
 } from "discord.js";
 import { CreateServerDto } from "../../server/dto/create-server.dto";
 
+@Injectable()
 export class ServerServiceDc{
-  private readonly logger = new Logger('Modals');
+  private readonly logger = new Logger('ServerServiceDc');
 
   constructor(
     private readonly serverService : ServerService,
-  ) {
-  }
+  ) {}
 
   async createServer([interaction]){
     const modal = new ModalBuilder()

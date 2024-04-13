@@ -3,7 +3,6 @@ import {
   Entity,
   PrimaryColumn,
 } from "typeorm";
-import { Role } from "./role.entity";
 
 @Entity()
 export class Member{
@@ -54,6 +53,6 @@ export class Member{
   timeInServer : number;
 
   @Column("text",{array:true, default:[]})
-  roles : Role[];
+  roles : string[];
 
 }

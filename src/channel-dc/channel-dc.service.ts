@@ -1,7 +1,8 @@
+import { Injectable } from '@nestjs/common';
 
 type ChannelType = 0|2|4;
-export class ChannelService{
-
+@Injectable()
+export class ChannelDcService {
   async create([interaction],name:string, type: ChannelType, parentId?: string){
 
     if (!parentId)
@@ -22,5 +23,4 @@ export class ChannelService{
       name: name,
     });
   }
-
 }

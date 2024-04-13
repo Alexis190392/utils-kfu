@@ -7,7 +7,7 @@ import {
   CurrentConsoleSend,
   WebadminConnect
 } from "./components";
-import { WebhooksService } from "../dc/services";
+import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
 
 
 @Injectable()
@@ -24,7 +24,7 @@ export class WebadminService {
     private readonly commons: Commons,
     private readonly currentConsoleLog: CurrentConsoleLog,
     private readonly currentConsoleSend: CurrentConsoleSend,
-    private readonly webhooks: WebhooksService,
+    private readonly webhooks: WebhookDcService,
   ) {}
 
   @Cron('*/5 * * * * *')
