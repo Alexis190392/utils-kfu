@@ -19,13 +19,13 @@ export class DiscordBotSlash{
   ) {
   }
 
-  @SlashCommand({
-    name: 'ping',
-    description: 'Ping-Pong Command',
-  })
-  async onPing(@Context() [interaction]: SlashCommandContext) {
-    return interaction.reply({ content: 'Pong!' });
-  }
+  // @SlashCommand({
+  //   name: 'ping',
+  //   description: 'Ping-Pong Command',
+  // })
+  // async onPing(@Context() [interaction]: SlashCommandContext) {
+  //   return interaction.reply({ content: 'Pong!' });
+  // }
 
   @SlashCommand({
     name: 'send',
@@ -36,35 +36,43 @@ export class DiscordBotSlash{
     return interaction.reply({content: response });
   }
 
-  @SlashCommand({
-    name: 'roles',
-    description: 'Extraer roles'
-  })
-  async onRole(@Context() [interaction]){
-    await this.roleService.getRoles([interaction]);
-    return interaction.reply({content: "Prueba rol" });
-  }
+  // @SlashCommand({
+  //   name: 'roles',
+  //   description: 'Extraer roles'
+  // })
+  // async onRole(@Context() [interaction]){
+  //   await this.roleService.getRoles([interaction]);
+  //   return interaction.reply({content: "Prueba rol" });
+  // }
 
-  @SlashCommand({
-    name: 'users',
-    description: 'Extraer users'
-  })
-  async onUsers(@Context() [interaction]){
-    await this.memberService.getUsers([interaction]);
-    return interaction.reply({content: "Prueba users" });
-  }
+  // @SlashCommand({
+  //   name: 'users',
+  //   description: 'Extraer users'
+  // })
+  // async onUsers(@Context() [interaction]){
+  //   await this.memberService.getUsers([interaction]);
+  //   return interaction.reply({content: "Prueba users" });
+  // }
 
 
   @SlashCommand({
     name: 'add-server',
     description: 'Agregar servidor'
   })
-  async onServers(@Context() [interaction]){
+  async onNewServer(@Context() [interaction]){
     await this.server.createServer([interaction])
   }
 
   @SlashCommand({
-    name: 'admin',
+    name: 'list-servers',
+    description: 'Ver servidores añadidos'
+  })
+  async onListServers(@Context() [interaction]){
+    await this.server.listServers([interaction]);
+  }
+
+  @SlashCommand({
+    name: 'see-admin',
     description: 'Estado de moderadores'
   })
   async onSeeModeratos(@Context() [interaction]){

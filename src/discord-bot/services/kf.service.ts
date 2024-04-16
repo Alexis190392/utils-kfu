@@ -10,6 +10,8 @@ import { ModeratorService } from "./moderator.service";
 import { CreateServerDto } from "../dtos/create-server.dto";
 import { ChannelService } from "./channel.service";
 import { WebhookService } from "./webhook.service";
+import { EmbedBuilder } from "discord.js";
+import { EmbedFieldsDto } from "../dtos/embedFields.dto";
 
 
 @Injectable()
@@ -23,16 +25,17 @@ export class KfService{
     private readonly commons: Commons,
 
     private readonly modalComponent:ModalComponent,
-    private readonly moderatorDcService:ModeratorService,
+    private readonly moderatorService:ModeratorService,
 
-    private readonly channelDcService:ChannelService,
-    private readonly webhookDcService:WebhookService,
+    private readonly channelService:ChannelService,
+    private readonly webhookService:WebhookService,
     private readonly webadminService:WebadminService,
 
     @InjectRepository(Server)
     private readonly serverRepository : Repository<Server>,
   ) {
   }
+
   async create(createServerDto: CreateServerDto) {
     try {
       const server = this.serverRepository.create(createServerDto);
@@ -60,7 +63,7 @@ export class KfService{
 
   async createServer([interaction]){
 
-    const verify: boolean = await this.moderatorDcService.verifyModerator([interaction]);
+    const verify: boolean = await this.moderatorService.verifyModerator([interaction]);
 
     if (!verify)
       return interaction.reply({content: "No tiene privilegios para este comando" });
@@ -81,8 +84,8 @@ export class KfService{
         if (await this.isPresent(ip, port))
           return interaction.reply({content: `El servidor ${ip}:${port} ya se encuentra añadido` });
 
-        const channelId = await this.channelDcService.create([interaction],name,0);
-        const webhookId = await this.webhookDcService.create([interaction],`${name} Logs`,channelId);
+        const channelId = await this.channelService.create([interaction],name,0);
+        const webhookId = await this.webhookService.create([interaction],`${name} Logs`,channelId);
 
         const newServer = new CreateServerDto();
         newServer.name = name;
@@ -118,7 +121,7 @@ export class KfService{
       return true;
   }
 
-  @Cron('*/5 * * * * *')
+  // @Cron('*/5 * * * * *')
   async process(){
     if (this.servers.length === 0)
       this.servers = await this.findAll();
@@ -138,6 +141,42 @@ export class KfService{
         const webhookId = server.webhook;
         await this.webadminService.cronDataLogs(baseUrl, credentials, webhookId);
       }
+    }
+  }
+
+  async listServers([interaction]) {
+
+    const member = await interaction.member;
+    const guild = await interaction.guild;
+    const name = guild.name;
+    const color = this.commons.decimalToHex(member.user.accentColor);
+    const icon = `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp`;
+    const iconUser = `https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.webp`;
+
+    const serverList = await this.findAll()
+    const fields = [];
+
+    for (const server of serverList) {
+      const field = new EmbedFieldsDto();
+      field.name = server.name;
+      field.value = `${server.ip}:${server.port}`;
+      fields.push(field);
+    }
+
+    const embed = new EmbedBuilder();
+    embed.setTitle('Servers');
+    embed.setColor(color);
+    embed.setThumbnail(iconUser);
+    embed.addFields(...fields);
+    embed.setTimestamp();
+    embed.setFooter({
+      text: name,
+      iconURL: icon
+    })
+    try {
+      return await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      this.logger.error(`Error al enviar el mensaje: ${error}`);
     }
   }
 }

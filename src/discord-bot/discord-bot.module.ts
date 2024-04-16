@@ -19,6 +19,7 @@ import {
 } from "./services";
 import { ModalComponent } from "./components/modal.component";
 import { Commons } from "../commons/commons";
+import { DiscordBotSlash } from "./discord-bot.slash";
 
 @Module({
   controllers: [DiscordBotController],
@@ -34,6 +35,7 @@ import { Commons } from "../commons/commons";
   ],
   providers: [
     DiscordBotService,
+    DiscordBotSlash,
     ChannelService,
     KfService,
     MemberService,
