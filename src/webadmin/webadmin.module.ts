@@ -6,7 +6,6 @@ import { WebadminController } from './webadmin.controller';
 import { Commons } from "../commons/commons";
 import { CurrentConsoleLog,
         CurrentConsoleSend,
-        WebadminConnect,
 } from "./components";
 
 
@@ -19,14 +18,10 @@ import { CurrentConsoleLog,
     WebadminService,
     Commons,
     CurrentConsoleLog,
-    WebadminConnect,
     CurrentConsoleSend,
   ],
   exports: [
     WebadminService,
-    // WebadminConnect,
-    // CurrentConsoleLog,
-    // CurrentConsoleSend,
   ]
 })
 export class WebadminModule {}

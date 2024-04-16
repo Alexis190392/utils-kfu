@@ -1,17 +1,21 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException } from "@nestjs/common";
 import { Commons } from "../../commons/commons";
 import { WebadminService } from "../../webadmin/webadmin.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Cron } from "@nestjs/schedule";
 import { Server } from "../entities/server.entity";
 import { ModalComponent } from "../components/modal.component";
 import { ModeratorService } from "./moderator.service";
 import { CreateServerDto } from "../dtos/create-server.dto";
 import { ChannelService } from "./channel.service";
 import { WebhookService } from "./webhook.service";
-import { EmbedBuilder } from "discord.js";
+import { Client, EmbedBuilder } from "discord.js";
 import { EmbedFieldsDto } from "../dtos/embedFields.dto";
+import { Cron } from "@nestjs/schedule";
 
 
 @Injectable()
@@ -23,10 +27,8 @@ export class KfService{
 
   constructor(
     private readonly commons: Commons,
-
     private readonly modalComponent:ModalComponent,
     private readonly moderatorService:ModeratorService,
-
     private readonly channelService:ChannelService,
     private readonly webhookService:WebhookService,
     private readonly webadminService:WebadminService,
@@ -69,8 +71,8 @@ export class KfService{
       return interaction.reply({content: "No tiene privilegios para este comando" });
 
     const modal = await this.modalComponent.newServer([interaction]);
-    const modalMessage = await interaction.showModal(modal);
-
+    await interaction.showModal(modal);
+    const icon = `https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.webp`;
     const filter= (interaction) => interaction.customId === `newServer-${interaction.user.id}`;
 
     interaction.awaitModalSubmit({filter,time:60000})
@@ -82,10 +84,10 @@ export class KfService{
         const pass = modalInteraction.fields.getTextInputValue('pass');
 
         if (await this.isPresent(ip, port))
-          return interaction.reply({content: `El servidor ${ip}:${port} ya se encuentra añadido` });
+          return modalInteraction.reply({content: `El servidor \`\`\`${ip}:${port}\`\`\` ya se encuentra añadido` });
 
         const channelId = await this.channelService.create([interaction],name,0);
-        const webhookId = await this.webhookService.create([interaction],`${name} Logs`,channelId);
+        const webhookId = await this.webhookService.create([interaction],`${name} Logs`,channelId,icon);
 
         const newServer = new CreateServerDto();
         newServer.name = name;
@@ -99,7 +101,9 @@ export class KfService{
         const server = await this.create(newServer);
         this.logger.log(`New server: ${server.name}  - ID: ${server.id}`)
 
-        modalInteraction.reply(`Nuevo server agregado: ${server.name}`)
+        modalInteraction.reply({
+          content: `Nuevo server agregado: \`\`\`${server.name}\`\`\``,
+        })
         await this.fetch();
 
       })
@@ -107,7 +111,7 @@ export class KfService{
         this.logger.warn(`No hubo respuesta: ${e.message}`)
       });
   }
-
+  @Cron('0 */10 * * * *')
   private async fetch(){
     this.servers = await this.findAll();
   }
@@ -121,26 +125,41 @@ export class KfService{
       return true;
   }
 
-  // @Cron('*/5 * * * * *')
+  @Cron('*/5 * * * * *')
   async process(){
     if (this.servers.length === 0)
       this.servers = await this.findAll();
 
+    const servers = this.servers;
 
-    console.log("#############################");
-    console.log(this.servers.length);
-    console.log("#############################");
-
-    for (const server of this.servers) {
-
+    for (const server of servers) {
       if (server.isActive){
-        console.log(server.name);
-        console.log("_______________________________");
         const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`
         const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
         const webhookId = server.webhook;
+
         await this.webadminService.cronDataLogs(baseUrl, credentials, webhookId);
       }
+    }
+  }
+
+  @Cron('*/20 * * * * *')
+  async statusServer(){
+    this.servers = await this.findAll();
+
+    const servers = this.servers;
+
+    for (const server of servers) {
+      let status = '';
+      if (server.isActive){
+        const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`
+        const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
+        status =  await this.webadminService.getConnection(baseUrl, credentials);
+
+      }else {
+        status = 'notActive';
+      }
+      await this.channelService.editName(server.channelId, server.name, status)
     }
   }
 
@@ -173,6 +192,7 @@ export class KfService{
       text: name,
       iconURL: icon
     })
+
     try {
       return await interaction.reply({ embeds: [embed] });
     } catch (error) {

@@ -103,7 +103,7 @@ export class DiscordBotSlash{
 
     // await this.channelService.create([interaction],"Nueva cat6",0,'1228219088246014032')
     // await  this.channelService.editName([interaction],'1228222659054141503', '💔-lalala')
-    // await  this.channelService.editName([interaction],'1228222659054141503', '💚-lalala')
+    // await  this.channelService.editName([interaction],'1228222659054141503', '💚💛-lalala')
 
     // await this.webhooks.create([interaction],"PruebaWH4")
     const aver = await interaction.member.id;

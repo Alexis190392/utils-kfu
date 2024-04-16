@@ -43,7 +43,6 @@ export class WebhookService{
       console.log(`Created webhook -> ${webhook.name} - ${webhook.id}`);
       return webhook.id; // Devuelve el ID del webhook
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }

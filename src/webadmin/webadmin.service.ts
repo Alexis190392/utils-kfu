@@ -1,8 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
   CurrentConsoleLog,
-  CurrentConsoleSend,
+  CurrentConsoleSend
 } from "./components";
+import axios from "axios";
 
 @Injectable()
 export class WebadminService {
@@ -25,12 +26,12 @@ export class WebadminService {
             message = `${message}\n${forLog}`
           }
         }
-
-        return message;
         // await this.webhooks.sendMessage(message);
       }
+      return  'OK';
     } catch (error) {
       this.logger.error(`Error en cronDataLogs: ${error.message}`);
+      return error.code;
     }
   }
 
@@ -42,23 +43,19 @@ export class WebadminService {
 
   //TODO ver todo lo de abajo
 
-  // async getConnection(baseUrl:string, credentials:string) {
-  //   try {
-  //     return await this.webadminConnect.getConnection(baseUrl, credentials);
-  //   } catch (error) {
-  //     this.logger.error(`Error en getConnection: ${error.message}`, error.stack);
-  //     throw error;
-  //   }
-  // }
-  //
-  // async dataLogs(baseUrl:string, consoleEndpoint:string, credentials:string) {
-  //   try {
-  //     return await this.currentConsoleLog.dataLogs(baseUrl, consoleEndpoint, credentials);
-  //   } catch (error) {
-  //     this.logger.error(`Error in dataLogs: ${error.message}`, error.stack);
-  //     throw error;
-  //   }
-  // }
+  async getConnection(baseUrl:string, credentials:string) {
+    try {
 
+      const headers = {
+        'Authorization': `Basic ${credentials}`,
+      };
+      const response = await axios.get(baseUrl, { headers });
+
+      return 'OK';
+
+    } catch (error) {
+      return error.code;
+    }
+  }
 
 }
