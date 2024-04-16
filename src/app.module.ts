@@ -5,21 +5,17 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Commons } from './commons/commons';
-import { ServerModule } from './server/server.module';
-import { DcModule } from './dc/dc.module';
-import { ChannelDcModule } from './channel-dc/channel-dc.module';
-import { WebhookDcModule } from './webhook-dc/webhook-dc.module';
-import { ModeratorDcModule } from './moderator-dc/moderator-dc.module';
-import { MemberDcModule } from './member-dc/member-dc.module';
 import { DiscordModule } from "nestjs-discord-webhook";
 import { NecordModule } from "necord";
 import { IntentsBitField } from "discord.js";
+import { ScheduleModule } from "@nestjs/schedule";
+import { DiscordBotModule } from './discord-bot/discord-bot.module';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -43,14 +39,11 @@ import { IntentsBitField } from "discord.js";
         IntentsBitField.Flags.GuildMembers
       ],
     }),
-    ServerModule,
-    DcModule,
-    ChannelDcModule,
-    WebhookDcModule,
-    ModeratorDcModule,
-    MemberDcModule,
+    DiscordBotModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Commons],
+  providers: [
+    AppService,
+  ],
 })
 export class AppModule {}

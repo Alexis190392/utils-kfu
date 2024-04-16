@@ -2,12 +2,13 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Context } from "necord";
+import { Member } from "./entities/member.entity";
+import { CreateRoleDto } from "./dtos/create-role.dto";
 
-import { CreateRoleDto } from "./dto/create-role.dto";
-import { Member } from "../member-dc/entities/member.entity";
+
 
 @Injectable()
-export class DcService {
+export class DiscordBotService {
   private readonly logger = new Logger('DiscordService')
   constructor(
 
@@ -68,6 +69,4 @@ export class DcService {
     const timeDifference = currentDate.getTime() - value.getTime();
     return Math.floor(timeDifference / (365.25 * 24 * 60 * 60 * 1000));
   }
-
 }
-

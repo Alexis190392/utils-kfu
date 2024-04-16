@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from "@nestjs/config";
 
 import { WebadminService } from './webadmin.service';
@@ -9,14 +8,12 @@ import { CurrentConsoleLog,
         CurrentConsoleSend,
         WebadminConnect,
 } from "./components";
-import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
 
 
 @Module({
   controllers: [WebadminController],
   imports:[
     ConfigModule.forRoot(),
-    ScheduleModule.forRoot(),
   ],
   providers: [
     WebadminService,
@@ -24,13 +21,12 @@ import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
     CurrentConsoleLog,
     WebadminConnect,
     CurrentConsoleSend,
-    WebhookDcService,
   ],
   exports: [
     WebadminService,
-    WebadminConnect,
-    CurrentConsoleLog,
-    CurrentConsoleSend
+    // WebadminConnect,
+    // CurrentConsoleLog,
+    // CurrentConsoleSend,
   ]
 })
 export class WebadminModule {}

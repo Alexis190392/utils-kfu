@@ -1,36 +1,21 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Cron } from "@nestjs/schedule";
-import * as process from "process";
-import { Commons } from "../commons/commons";
 import {
   CurrentConsoleLog,
   CurrentConsoleSend,
-  WebadminConnect
 } from "./components";
-import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
-
 
 @Injectable()
 export class WebadminService {
-  private readonly logger = new Logger(WebadminService.name);
-
-  private readonly baseUrl = `http://${process.env.WEBADMIN_URI}:${process.env.WEBADMIN_PORT}${process.env.DEFAULT_ENDPOINT}`;
-  private readonly credentials = this.commons.encodeToBase64(`${process.env.WEBADMIN_USER}:${process.env.WEBADMIN_PASS}`);
-  private readonly consoleEndpoint = process.env.CURRENT_CONSOLE_LOG;
-  private readonly consoleSend = process.env.CURRENT_CONSOLE_SEND;
-
+  private readonly logger = new Logger("WebAdminService");
   constructor(
-    private readonly webadminConnect: WebadminConnect,
-    private readonly commons: Commons,
     private readonly currentConsoleLog: CurrentConsoleLog,
     private readonly currentConsoleSend: CurrentConsoleSend,
-    private readonly webhooks: WebhookDcService,
   ) {}
 
-  @Cron('*/5 * * * * *')
-  async cronDataLogs() {
+
+  async cronDataLogs(baseUrl:string, credentials:string , webhookId: String) {
     try {
-      const data = await this.currentConsoleLog.dataLogs(this.baseUrl, this.consoleEndpoint, this.credentials);
+      const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials);
       const forLogs = await this.currentConsoleLog.newMessages(data);
 
       if (forLogs.length > 0){
@@ -40,32 +25,40 @@ export class WebadminService {
             message = `${message}\n${forLog}`
           }
         }
-        await this.webhooks.sendMessage(message);
+
+        return message;
+        // await this.webhooks.sendMessage(message);
       }
     } catch (error) {
       this.logger.error(`Error en cronDataLogs: ${error.message}`);
     }
   }
 
-  async getConnection() {
-    try {
-      return await this.webadminConnect.getConnection(this.baseUrl, this.credentials);
-    } catch (error) {
-      this.logger.error(`Error en getConnection: ${error.message}`, error.stack);
-      throw error;
-    }
+  async sendToGame(sendText: string, baseUrl: string, credentials:string) {
+
+    return this.currentConsoleSend.sendMessage(sendText, baseUrl, '/current_console', credentials);
   }
 
-  async dataLogs() {
-    try {
-      return await this.currentConsoleLog.dataLogs(this.baseUrl, this.consoleEndpoint, this.credentials);
-    } catch (error) {
-      this.logger.error(`Error in dataLogs: ${error.message}`, error.stack);
-      throw error;
-    }
-  }
 
-  async sendMessage(sendText: string) {
-    return this.currentConsoleSend.sendMessage(sendText, this.baseUrl, this.consoleSend, this.credentials);
-  }
+  //TODO ver todo lo de abajo
+
+  // async getConnection(baseUrl:string, credentials:string) {
+  //   try {
+  //     return await this.webadminConnect.getConnection(baseUrl, credentials);
+  //   } catch (error) {
+  //     this.logger.error(`Error en getConnection: ${error.message}`, error.stack);
+  //     throw error;
+  //   }
+  // }
+  //
+  // async dataLogs(baseUrl:string, consoleEndpoint:string, credentials:string) {
+  //   try {
+  //     return await this.currentConsoleLog.dataLogs(baseUrl, consoleEndpoint, credentials);
+  //   } catch (error) {
+  //     this.logger.error(`Error in dataLogs: ${error.message}`, error.stack);
+  //     throw error;
+  //   }
+  // }
+
+
 }

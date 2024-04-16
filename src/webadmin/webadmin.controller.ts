@@ -5,30 +5,30 @@ import { WebadminService } from "./webadmin.service";
 export class WebadminController {
   constructor(private readonly webadminService: WebadminService) {}
 
-  @Get('/status')
-  getStatus(){
-    return this.webadminService.getConnection();
-  }
+  // @Get('/status')
+  // getStatus(){
+  //   return this.webadminService.getConnection();
+  // }
+  //
+  // @Get('/dataLogs')
+  // getDataLogs(){
+  //   return this.webadminService.dataLogs();
+  // }
 
-  @Get('/dataLogs')
-  getDataLogs(){
-    return this.webadminService.dataLogs();
-  }
-
-  @Post('/send')
-  async enviarPost(@Body('SendText') sendText: string) {
-    try {
-      const response = await this.webadminService.sendMessage(sendText);
-      return {
-        status: 'send data',
-        data: response
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        message: error.message
-      };
-    }
-  }
+  // @Post('/send')
+  // async enviarPost(@Body('SendText') sendText: string) {
+  //   try {
+  //     const response = await this.webadminService.sendMessage(sendText);
+  //     return {
+  //       status: 'send data',
+  //       data: response
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       status: 'error',
+  //       message: error.message
+  //     };
+  //   }
+  // }
 
 }

@@ -1,31 +1,33 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException
-} from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { Commons } from "../../commons/commons";
+import { WebadminService } from "../../webadmin/webadmin.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { Cron } from "@nestjs/schedule";
+import { Server } from "../entities/server.entity";
+import { ModalComponent } from "../components/modal.component";
+import { ModeratorService } from "./moderator.service";
+import { CreateServerDto } from "../dtos/create-server.dto";
+import { ChannelService } from "./channel.service";
+import { WebhookService } from "./webhook.service";
 
-import { CreateServerDto } from './dto/create-server.dto';
-import { Server } from "./entities/server.entity";
-import { ModalComponent } from "./components/modal.component";
-import { ModeratorDcService } from "../moderator-dc/moderator-dc.service";
-import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
-import { ChannelDcService } from "../channel-dc/channel-dc.service";
 
 @Injectable()
-export class ServerService {
+export class KfService{
+  private readonly logger = new Logger('KfService');
 
-  private readonly logger = new Logger('ServerService');
+
+  private servers:Server[] = [];
 
   constructor(
+    private readonly commons: Commons,
 
     private readonly modalComponent:ModalComponent,
-    private readonly moderatorDcService:ModeratorDcService,
+    private readonly moderatorDcService:ModeratorService,
 
-    private readonly channelDcService:ChannelDcService,
-    private readonly webhookDcService:WebhookDcService,
+    private readonly channelDcService:ChannelService,
+    private readonly webhookDcService:WebhookService,
+    private readonly webadminService:WebadminService,
 
     @InjectRepository(Server)
     private readonly serverRepository : Repository<Server>,
@@ -95,13 +97,18 @@ export class ServerService {
         this.logger.log(`New server: ${server.name}  - ID: ${server.id}`)
 
         modalInteraction.reply(`Nuevo server agregado: ${server.name}`)
+        await this.fetch();
 
       })
       .catch((e)=>{
         this.logger.warn(`No hubo respuesta: ${e.message}`)
       });
   }
-  
+
+  private async fetch(){
+    this.servers = await this.findAll();
+  }
+
   private async isPresent(ip:string , port:string){
     const server = await this.serverRepository.findOneBy({ip});
     if (!server)
@@ -111,4 +118,26 @@ export class ServerService {
       return true;
   }
 
+  @Cron('*/5 * * * * *')
+  async process(){
+    if (this.servers.length === 0)
+      this.servers = await this.findAll();
+
+
+    console.log("#############################");
+    console.log(this.servers.length);
+    console.log("#############################");
+
+    for (const server of this.servers) {
+
+      if (server.isActive){
+        console.log(server.name);
+        console.log("_______________________________");
+        const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`
+        const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
+        const webhookId = server.webhook;
+        await this.webadminService.cronDataLogs(baseUrl, credentials, webhookId);
+      }
+    }
+  }
 }

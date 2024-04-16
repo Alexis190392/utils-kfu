@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import { Injectable } from "@nestjs/common";
 
-// @Injectable()
+@Injectable()
 export class ModalComponent{
 
   async newServer([interaction]){

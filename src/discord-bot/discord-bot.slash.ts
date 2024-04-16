@@ -1,24 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import {
-  Context, Options,
-  SlashCommand,
-  SlashCommandContext,
-} from "necord";
+import { Context, Options, SlashCommand, SlashCommandContext } from "necord";
 
-import { DcService } from "./dc.service";
-import { TextDto } from "./dto/discord.texto.dto";
-import { WebhookDcService } from "../webhook-dc/webhook-dc.service";
-import { ModeratorDcService } from "../moderator-dc/moderator-dc.service";
-import { ServerService } from "../server/server.service";
+import { Injectable } from "@nestjs/common";
+import { DiscordBotService } from "./discord-bot.service";
+import { TextDto } from "./dtos/discord.texto.dto";
+import { KfService, ModeratorService, WebhookService } from "./services";
 
 @Injectable()
-export class SlashCommands {
+export class DiscordBotSlash{
 
   constructor(
-     private readonly dcService:DcService,
-     private readonly server : ServerService,
-     private readonly webhooks : WebhookDcService,
-     private readonly moderatorService:ModeratorDcService,
+    private readonly dcService:DiscordBotService,
+    private readonly server :KfService,
+    private readonly webhooks : WebhookService,
+    private readonly moderatorService:ModeratorService,
+
   ) {
   }
 
@@ -63,7 +58,7 @@ export class SlashCommands {
     description: 'Agregar servidor'
   })
   async onServers(@Context() [interaction]){
-     await this.server.createServer([interaction])
+    await this.server.createServer([interaction])
   }
 
   @SlashCommand({
@@ -96,16 +91,14 @@ export class SlashCommands {
   })
   async onTest(@Context() [interaction]){
 
-     // await this.channelService.create([interaction],"Nueva cat6",0,'1228219088246014032')
+    // await this.channelService.create([interaction],"Nueva cat6",0,'1228219088246014032')
     // await  this.channelService.editName([interaction],'1228222659054141503', '💔-lalala')
     // await  this.channelService.editName([interaction],'1228222659054141503', '💚-lalala')
 
-   // await this.webhooks.create([interaction],"PruebaWH4")
+    // await this.webhooks.create([interaction],"PruebaWH4")
     const aver = await interaction.member.id;
     console.log(aver);
 
     // console.log(await interaction.guild.channels.fetch())
   }
-
-
 }

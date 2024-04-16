@@ -1,21 +1,21 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { WebadminService } from "../webadmin/webadmin.service";
-import { DcService } from "../dc/dc.service";
+import { WebadminService } from "../../webadmin/webadmin.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { StringSelect } from "necord";
 import { ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
-import { Moderator } from "./entities/moderator.entity";
-import { DcUtils } from "../dc/dc.utils";
+import { StringSelect } from "necord";
+import { DiscordBotService } from "../discord-bot.service";
+import { Commons } from "../../commons/commons";
+import { Moderator } from "../entities/moderator.entity";
 
 @Injectable()
-export class ModeratorDcService {
+export class ModeratorService{
   private readonly logger = new Logger('ModeratorService')
 
   constructor(
     private readonly webadminService: WebadminService,
-    private readonly dcService:DcService,
-    private readonly utils:DcUtils,
+    private readonly dcService:DiscordBotService,
+    private readonly utils:Commons,
 
     @InjectRepository(Moderator)
     private readonly moderatorRepository: Repository<Moderator>,
@@ -52,7 +52,8 @@ export class ModeratorDcService {
     const verify: boolean = await this.verifyModerator([interaction]);
 
     if (verify){
-      await this.webadminService.sendMessage(text);
+      //TODO falta resolver:
+      // await this.webadminService.sendMessage(text);
       return `Mensaje enviado: ${text}`;
     } else {
       return 'No tiene privilegios para este comando';
@@ -104,13 +105,17 @@ export class ModeratorDcService {
       text: name,
       iconURL: icon
     })
-    await interaction.reply({ embeds: [embed] });
+    try {
+      await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      this.logger.error(`Error al enviar el mensaje: ${error}`);
+    }
 
   }
 
   async SeeModeratos( [interaction]) {
     const allows= await this.getModerators();
-    const embed = this.listModerators([interaction],allows);
+    const embed = await this.listModerators([interaction],allows);
   }
 
   @StringSelect('SELECT_MODERATOR')
