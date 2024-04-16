@@ -3,7 +3,7 @@ import { Context, Options, SlashCommand, SlashCommandContext } from "necord";
 import { Injectable } from "@nestjs/common";
 import { DiscordBotService } from "./discord-bot.service";
 import { TextDto } from "./dtos/discord.texto.dto";
-import { KfService, ModeratorService, WebhookService } from "./services";
+import { KfService, MemberService, ModeratorService, RoleService, WebhookService } from "./services";
 
 @Injectable()
 export class DiscordBotSlash{
@@ -13,6 +13,8 @@ export class DiscordBotSlash{
     private readonly server :KfService,
     private readonly webhooks : WebhookService,
     private readonly moderatorService:ModeratorService,
+    private readonly roleService: RoleService,
+    private readonly memberService: MemberService,
 
   ) {
   }
@@ -39,7 +41,7 @@ export class DiscordBotSlash{
     description: 'Extraer roles'
   })
   async onRole(@Context() [interaction]){
-    await this.dcService.getRoles([interaction]);
+    await this.roleService.getRoles([interaction]);
     return interaction.reply({content: "Prueba rol" });
   }
 
@@ -48,7 +50,7 @@ export class DiscordBotSlash{
     description: 'Extraer users'
   })
   async onUsers(@Context() [interaction]){
-    await this.dcService.getUsers([interaction]);
+    await this.memberService.getUsers([interaction]);
     return interaction.reply({content: "Prueba users" });
   }
 

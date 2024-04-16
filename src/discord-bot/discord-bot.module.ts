@@ -12,8 +12,11 @@ import { WebadminModule } from "../webadmin/webadmin.module";
 import {
   ChannelService,
   KfService,
+  MemberService,
   ModeratorService,
-  WebhookService } from "./services";
+  RoleService,
+  WebhookService
+} from "./services";
 import { ModalComponent } from "./components/modal.component";
 import { Commons } from "../commons/commons";
 
@@ -33,8 +36,10 @@ import { Commons } from "../commons/commons";
     DiscordBotService,
     ChannelService,
     KfService,
+    MemberService,
     ModeratorService,
     WebhookService,
+    RoleService,
     ModalComponent,
     Commons
   ],

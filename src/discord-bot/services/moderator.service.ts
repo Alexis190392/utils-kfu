@@ -7,6 +7,7 @@ import { StringSelect } from "necord";
 import { DiscordBotService } from "../discord-bot.service";
 import { Commons } from "../../commons/commons";
 import { Moderator } from "../entities/moderator.entity";
+import { RoleService } from "./role.service";
 
 @Injectable()
 export class ModeratorService{
@@ -15,6 +16,7 @@ export class ModeratorService{
   constructor(
     private readonly webadminService: WebadminService,
     private readonly dcService:DiscordBotService,
+    private readonly roleService: RoleService,
     private readonly utils:Commons,
 
     @InjectRepository(Moderator)
@@ -126,7 +128,7 @@ export class ModeratorService{
       return interaction.reply({content: "No tiene privilegios para este comando" });
 
     const moderator= new Moderator();
-    const roles = await this.dcService.getRoles([interaction]);
+    const roles = await this.roleService.getRoles([interaction]);
 
     const stringSelect = new StringSelectMenuBuilder();
     stringSelect.setCustomId('moderators')
