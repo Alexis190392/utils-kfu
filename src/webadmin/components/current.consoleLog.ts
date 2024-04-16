@@ -8,7 +8,7 @@ import { Commons } from "../../commons/commons";
 @Injectable()
 export class CurrentConsoleLog {
 
-  private cache: string[] = [];
+  private cache = {};
 
   constructor(
     private readonly commons:Commons
@@ -46,17 +46,31 @@ export class CurrentConsoleLog {
     }
   }
 
-  async newMessages(messages: string[]) {
-    let newMessages: string[] = [];
 
-    if (this.cache.length === 0) {
-      this.cache = [...messages];
+  async newMessages(messages: string[], name: string) {
+    let newMessages = [];
+
+    if (Object.keys(this.cache).length === 0){
+      this.cache[name]=[...messages];
       return [...messages];
     }
 
+    // if (this.cache.hasOwnProperty(name)){
+    //   this.cache[name]=[...messages];
+    //   return [...messages];
+    // }
+
+
+    // if (this.cache.length === 0) {
+    //   this.cache = [...messages];
+    //   return [...messages];
+    // }
+
+    let subCache = this.cache[name]
+
     let found = false;
     for (let i = 0; i < messages.length; i++) {
-      if (!this.cache.includes(messages[i])) {
+      if (!subCache.includes(messages[i])) {
         found = true;
         newMessages.push(messages[i]);
       } else if (found) {
@@ -65,7 +79,8 @@ export class CurrentConsoleLog {
     }
 
     if (found) {
-      this.cache = [...messages];
+      subCache = [...messages];
+      this.cache[name] = subCache;
     }
 
     return newMessages;

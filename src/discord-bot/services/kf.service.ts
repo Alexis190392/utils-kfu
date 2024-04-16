@@ -13,7 +13,7 @@ import { ModeratorService } from "./moderator.service";
 import { CreateServerDto } from "../dtos/create-server.dto";
 import { ChannelService } from "./channel.service";
 import { WebhookService } from "./webhook.service";
-import { Client, EmbedBuilder } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { EmbedFieldsDto } from "../dtos/embedFields.dto";
 import { Cron } from "@nestjs/schedule";
 
@@ -125,7 +125,7 @@ export class KfService{
       return true;
   }
 
-  @Cron('*/5 * * * * *')
+  @Cron('*/10 * * * * *')
   async process(){
     if (this.servers.length === 0)
       this.servers = await this.findAll();
@@ -136,9 +136,9 @@ export class KfService{
       if (server.isActive){
         const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`
         const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
-        const webhookId = server.webhook;
 
-        await this.webadminService.cronDataLogs(baseUrl, credentials, webhookId);
+        const message = await this.webadminService.cronDataLogs(baseUrl, credentials, server.name, server.channelId ,server.webhook);
+        await this.webhookService.sendMessage(message, server.channelId, server.webhook)
       }
     }
   }

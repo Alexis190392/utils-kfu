@@ -45,5 +45,8 @@ import { DiscordBotSlash } from "./discord-bot.slash";
     ModalComponent,
     Commons
   ],
+  exports:[
+    WebhookService,
+  ]
 })
 export class DiscordBotModule {}

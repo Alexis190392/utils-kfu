@@ -1,22 +1,20 @@
 import { Injectable } from "@nestjs/common";
-import { EmbedBuilder } from "discord.js";
+import { Client, EmbedBuilder, TextChannel } from "discord.js";
+import { EmbedFieldsDto } from "../dtos/embedFields.dto";
 
 @Injectable()
 export class WebhookService{
   constructor(
-    // private readonly client: Client,
+    private readonly client: Client
     // @InjectDiscord() private readonly discord: WebhookClient,
   ) {}
 
-  async sendMessage(message: string, channelId?:string): Promise<void> {
-    // const channel = this.client.channels.cache.get(channelId);
-
-    // console.log(channel);
-
+  async sendMessage(message: string, channelId: string, webhookId: string): Promise<void> {
     try {
-      if (message !== '')
-        message=""
-      // await this.discord.send(message);
+      if (message !== '') {
+        await this.findWebhook(message, channelId, webhookId);
+      }
+
     } catch (error) {
       console.error('Error al enviar el mensaje al webhook:', error);
     }
@@ -47,36 +45,48 @@ export class WebhookService{
     }
   }
 
-  async findWebhook([interaction], channelId: string){
+  async findWebhook(message: string, channelId: string, webhookID:string){
     const embed = new EmbedBuilder()
       .setTitle('Some Title lalala')
       .setColor(0x00FFFF);
 
     // const channelID = await interaction.channelId;
     // const channel = interaction.channels.cache.get("1215373200783966318");
-    const channel =  interaction.guild.channels.cache.get(channelId);
+    // const channel =  interaction.guild.channels.cache.get(channelId);
+    const channel = await this.client.channels.fetch(channelId);
+    const textChannel = channel as TextChannel; // Convierte el canal a TextChannel
 
     try {
-      const webhooks = await channel.fetchWebhooks();
-      console.log(webhooks);
-      console.log("----------------------------------------------------------------------------------------------------------");
+      const webhooks = await textChannel.fetchWebhooks();
+      // console.log(webhooks);
+      // console.log("----------------------------------------------------------------------------------------------------------");
       // const webhook = webhooks.find(wh => wh.token);
 
       //busqueda con id y tenga token
-      const webhook = webhooks.find(wh => wh.id === '' && wh.token);
+      const webhook = webhooks.find(wh => wh.id === webhookID && wh.token);
 
-      console.log(webhook);
+      // console.log(webhook);
 
       if (!webhook) {
         return console.log('No webhook was found that I can use!');
       }
 
-      // console.log(webhook);
+      const icon = `https://cdn.discordapp.com/icons/${textChannel.guild.id}/${textChannel.guild.icon}.webp`;
+
+      const embed = new EmbedBuilder();
+      embed.setTitle(webhook.name);
+      embed.setColor('#ffaa00');
+      embed.setDescription(message);
+      embed.setTimestamp();
+      embed.setFooter({
+        text: '[ /send ] para enviar mensajes',
+        iconURL: icon
+      })
 
       await webhook.send({
-        content: 'Webhook test',
-        // username: 'some-usernameq',
-        avatarURL: 'https://i.imgur.com/AfFp7pu.png',
+        // content: message,
+        username: textChannel.name,
+        avatarURL: icon,
         embeds: [embed],
       });
     } catch (error) {

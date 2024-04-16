@@ -14,24 +14,24 @@ export class WebadminService {
   ) {}
 
 
-  async cronDataLogs(baseUrl:string, credentials:string , webhookId: String) {
+  async cronDataLogs(baseUrl:string, credentials:string, name: string, channelId: string, webhookId: string) {
     try {
       const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials);
-      const forLogs = await this.currentConsoleLog.newMessages(data);
+      const forLogs = await this.currentConsoleLog.newMessages(data, name);
+      let message = '';
 
       if (forLogs.length > 0){
-        let message = '';
+
         for (const forLog of forLogs) {
           if (forLog != ''){
             message = `${message}\n${forLog}`
           }
         }
-        // await this.webhooks.sendMessage(message);
       }
-      return  'OK';
+
+      return message;
     } catch (error) {
-      this.logger.error(`Error en cronDataLogs: ${error.message}`);
-      return error.code;
+      return '';
     }
   }
 
@@ -39,9 +39,6 @@ export class WebadminService {
 
     return this.currentConsoleSend.sendMessage(sendText, baseUrl, '/current_console', credentials);
   }
-
-
-  //TODO ver todo lo de abajo
 
   async getConnection(baseUrl:string, credentials:string) {
     try {
