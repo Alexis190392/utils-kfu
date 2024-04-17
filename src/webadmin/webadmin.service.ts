@@ -48,10 +48,10 @@ export class WebadminService {
       };
       const response = await axios.get(baseUrl, { headers });
 
-      return 'OK';
+      return response.status;
 
     } catch (error) {
-      return error.code;
+      return 404;
     }
   }
 

@@ -24,6 +24,7 @@ export class KfService{
 
 
   private servers:Server[] = [];
+  private cache = {}
 
   constructor(
     private readonly commons: Commons,
@@ -149,24 +150,33 @@ export class KfService{
     }
   }
 
-  @Cron('*/20 * * * * *')
+  @Cron('*/10 * * * * *')
   async statusServer(){
     this.servers = await this.findAll();
 
     const servers = this.servers;
 
     for (const server of servers) {
-      let status = '';
+      await this.delay(1000)
+      let status: number = 0;
       if (server.isActive){
         const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`
         const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
         status =  await this.webadminService.getConnection(baseUrl, credentials);
 
-      }else {
-        status = 'notActive';
+        if (!this.cache[server.name]) {
+          this.cache[server.name] = status;
+          break;
+        }
+
+        if (this.cache[server.name] != status) {
+          this.cache[server.name] = status;
+        }
+      } else {
+        status = 404;
+
       }
-      await this.channelService.editName(server.channelId, server.name, status)
-      await this.delay(1000)
+      this.channelService.editName(server.channelId, server.name, status)
     }
   }
 
