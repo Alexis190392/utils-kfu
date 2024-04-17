@@ -15,6 +15,7 @@ export class WebadminService {
 
 
   async cronDataLogs(baseUrl:string, credentials:string, name: string, channelId: string, webhookId: string) {
+    console.log(baseUrl);
     try {
       const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials);
       const forLogs = await this.currentConsoleLog.newMessages(data, name);
@@ -37,7 +38,7 @@ export class WebadminService {
 
   async sendToGame(sendText: string, baseUrl: string, credentials:string) {
 
-    return this.currentConsoleSend.sendMessage(sendText, baseUrl, '/current_console', credentials);
+    return this.currentConsoleSend.sendMessage(sendText, baseUrl, credentials);
   }
 
   async getConnection(baseUrl:string, credentials:string) {

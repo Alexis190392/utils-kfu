@@ -38,6 +38,11 @@ export class KfService{
   ) {
   }
 
+
+  // async delay(ms: number) {
+  //   return new Promise(resolve => setTimeout(resolve, ms));
+  // }
+
   async create(createServerDto: CreateServerDto) {
     try {
       const server = this.serverRepository.create(createServerDto);
@@ -139,6 +144,7 @@ export class KfService{
 
         const message = await this.webadminService.cronDataLogs(baseUrl, credentials, server.name, server.channelId ,server.webhook);
         await this.webhookService.sendMessage(message, server.channelId, server.webhook)
+        // await this.delay(1000)
       }
     }
   }
@@ -160,6 +166,7 @@ export class KfService{
         status = 'notActive';
       }
       await this.channelService.editName(server.channelId, server.name, status)
+      // await this.delay(1000)
     }
   }
 

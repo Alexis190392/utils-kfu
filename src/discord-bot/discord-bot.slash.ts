@@ -32,7 +32,7 @@ export class DiscordBotSlash{
     description: 'Enviar mensaje al servidor'
   })
   async onSend(@Context() [interaction]: SlashCommandContext, @Options() { text }: TextDto) {
-    const response=  await this.moderatorService.sendMessage(text, [interaction])
+    const response=  await this.moderatorService.sendMessage([interaction],text)
     return interaction.reply({content: response });
   }
 

@@ -1,12 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { Client, EmbedBuilder, TextChannel } from "discord.js";
-import { EmbedFieldsDto } from "../dtos/embedFields.dto";
 
 @Injectable()
 export class WebhookService{
   constructor(
-    private readonly client: Client
-    // @InjectDiscord() private readonly discord: WebhookClient,
+    private readonly client: Client,
   ) {}
 
   async sendMessage(message: string, channelId: string, webhookId: string): Promise<void> {
@@ -45,27 +43,29 @@ export class WebhookService{
     }
   }
 
-  async findWebhook(message: string, channelId: string, webhookID:string){
-    const embed = new EmbedBuilder()
-      .setTitle('Some Title lalala')
-      .setColor(0x00FFFF);
 
-    // const channelID = await interaction.channelId;
-    // const channel = interaction.channels.cache.get("1215373200783966318");
-    // const channel =  interaction.guild.channels.cache.get(channelId);
+  // async findWebhookByChannel(channelId){
+  //   const channel = await this.client.channels.fetch(channelId);
+  //   const textChannel = channel as TextChannel; // Convierte el canal a TextChannel
+  //   const webhooks = await textChannel.fetchWebhooks();
+  //   const webhook = webhooks.find(wh => wh.token);
+  //
+  //   console.log(webhook.id);
+  // }
+
+
+  async findWebhook(message: string, channelId: string, webhookID:string){
+
+    // this.findWebhookByChannel(channelId);
+
     const channel = await this.client.channels.fetch(channelId);
     const textChannel = channel as TextChannel; // Convierte el canal a TextChannel
 
     try {
       const webhooks = await textChannel.fetchWebhooks();
-      // console.log(webhooks);
-      // console.log("----------------------------------------------------------------------------------------------------------");
-      // const webhook = webhooks.find(wh => wh.token);
 
       //busqueda con id y tenga token
       const webhook = webhooks.find(wh => wh.id === webhookID && wh.token);
-
-      // console.log(webhook);
 
       if (!webhook) {
         return console.log('No webhook was found that I can use!');

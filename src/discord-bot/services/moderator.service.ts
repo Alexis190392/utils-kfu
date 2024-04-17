@@ -8,19 +8,24 @@ import { DiscordBotService } from "../discord-bot.service";
 import { Commons } from "../../commons/commons";
 import { Moderator } from "../entities/moderator.entity";
 import { RoleService } from "./role.service";
+import { Server } from "../entities/server.entity";
+import { WebhookService } from "./webhook.service";
 
 @Injectable()
 export class ModeratorService{
   private readonly logger = new Logger('ModeratorService')
 
   constructor(
+    private readonly webhookService : WebhookService,
     private readonly webadminService: WebadminService,
     private readonly dcService:DiscordBotService,
     private readonly roleService: RoleService,
-    private readonly utils:Commons,
+    private readonly commons:Commons,
 
     @InjectRepository(Moderator)
     private readonly moderatorRepository: Repository<Moderator>,
+    @InjectRepository(Server)
+    private readonly serverRepository: Repository<Server>,
 
   ) {}
 
@@ -50,13 +55,28 @@ export class ModeratorService{
     return verify;
   }
 
-  async sendMessage(text:string, [interaction]){
+  async sendMessage([interaction],text:string){
     const verify: boolean = await this.verifyModerator([interaction]);
 
+
     if (verify){
+
+      const channel = await interaction.channel.fetch();
+      let baseUrl = ''
+      let credentials = ''
+
+      const servers = await this.serverRepository.find();
+      for (const server of servers) {
+        if (server.channelId === channel.id){
+          baseUrl = `${server.ip}:${server.port}`
+          credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
+          break;
+        }
+      }
       //TODO falta resolver:
       // await this.webadminService.sendMessage(text);
-      return `Mensaje enviado: ${text}`;
+      await this.webadminService.sendToGame(text, baseUrl, credentials)
+      return `Mensaje enviado: \`\`\`${text}\`\`\``;
     } else {
       return 'No tiene privilegios para este comando';
     }
@@ -82,7 +102,7 @@ export class ModeratorService{
     const member = await interaction.member;
     const guild = await interaction.guild;
     const name = guild.name;
-    const color = this.utils.decimalToHex(member.user.accentColor);
+    const color = this.commons.decimalToHex(member.user.accentColor);
     const icon = `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp`;
     const iconUser = `https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.webp`;
     let message = '';

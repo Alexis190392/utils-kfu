@@ -39,7 +39,11 @@ export class CurrentConsoleLog {
         consoleLogText = this.commons.decodeParams(consoleLogText);
 
       }
+
+      console.log(consoleLogText);
+
       return this.commons.splitLines(consoleLogText);
+      console.log('###########################################################');
 
     } catch (error) {
       throw error;
@@ -54,17 +58,6 @@ export class CurrentConsoleLog {
       this.cache[name]=[...messages];
       return [...messages];
     }
-
-    // if (this.cache.hasOwnProperty(name)){
-    //   this.cache[name]=[...messages];
-    //   return [...messages];
-    // }
-
-
-    // if (this.cache.length === 0) {
-    //   this.cache = [...messages];
-    //   return [...messages];
-    // }
 
     let subCache = this.cache[name]
 

@@ -4,7 +4,7 @@ import axios from "axios";
 @Injectable()
 export class CurrentConsoleSend{
 
-  async sendMessage(sendText: string, url: string, endpoint: string, credentials:string): Promise<any> {
+  async sendMessage(sendText: string, url: string, credentials:string): Promise<any> {
     try {
       const path = '/ServerAdmin/current_console';
       const postData = `SendText=say+(BotDiscordAdmin) ${encodeURIComponent(sendText)}&Send=Send`;
@@ -13,7 +13,9 @@ export class CurrentConsoleSend{
         'Connection': 'close'
       };
 
-      const response = await axios.post(`${url}${endpoint}`,postData,{headers})
+      console.log(`${url}${path}`);
+
+      const response = await axios.post(`http://${url}${path}`,postData,{headers})
 
 
       const statusCode = response.status;

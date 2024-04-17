@@ -24,8 +24,12 @@ export class Commons {
   }
 
   splitLines(text: string): string[] {
-    const lines= text.split(';');
-    return lines.map(linea => linea.trim());
+    if (text.includes(';')) {
+      const lines = text.split(";");
+      return lines.map(linea => linea.trim());
+    } else {
+      return [text];
+    }
   }
 
   filterTypeChannels(list: { name: string; type: number;}[], type: number){
