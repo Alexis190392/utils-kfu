@@ -16,7 +16,6 @@ export class CurrentConsoleLog {
   }
 
   async dataLogs(url: string, endpoint: string, credentials: string): Promise<string[]> {
-    // const credentials = this.commons.encodeToBase64(`${userAdmin}:${password}`);
 
     const headers = {
       'Authorization': `Basic ${credentials}`,
@@ -40,10 +39,7 @@ export class CurrentConsoleLog {
 
       }
 
-      console.log(consoleLogText);
-
       return this.commons.splitLines(consoleLogText);
-      console.log('###########################################################');
 
     } catch (error) {
       throw error;

@@ -15,7 +15,6 @@ export class WebadminService {
 
 
   async cronDataLogs(baseUrl:string, credentials:string, name: string, channelId: string, webhookId: string) {
-    console.log(baseUrl);
     try {
       const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials);
       const forLogs = await this.currentConsoleLog.newMessages(data, name);
