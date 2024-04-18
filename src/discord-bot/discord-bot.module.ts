@@ -20,6 +20,7 @@ import {
 import { ModalComponent } from "./components/modal.component";
 import { Commons } from "../commons/commons";
 import { DiscordBotSlash } from "./discord-bot.slash";
+import { RecordLog } from "../webadmin/entities/record-log.entity";
 
 @Module({
   controllers: [DiscordBotController],
@@ -30,6 +31,7 @@ import { DiscordBotSlash } from "./discord-bot.slash";
       Channel,
       Moderator,
       Role,
+      RecordLog,
     ]),
     WebadminModule,
   ],

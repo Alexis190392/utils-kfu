@@ -7,12 +7,17 @@ import { Commons } from "../commons/commons";
 import { CurrentConsoleLog,
         CurrentConsoleSend,
 } from "./components";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { RecordLog } from "./entities/record-log.entity";
 
 
 @Module({
   controllers: [WebadminController],
   imports:[
     ConfigModule.forRoot(),
+    TypeOrmModule.forFeature([
+      RecordLog,
+    ])
   ],
   providers: [
     WebadminService,

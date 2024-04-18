@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Client, TextChannel } from "discord.js";
 
 
 type ChannelType = 0|2|4;
 @Injectable()
 export class ChannelService{
-
+  private readonly logger: Logger;
   constructor(
     private readonly client: Client
   ) {
@@ -45,7 +45,7 @@ export class ChannelService{
         case 200:
           name = `💚-${name}`;
           break;
-        case 302:
+        case 502:
           name = `💛-${name}`;
           break;
         case 404:
@@ -61,7 +61,7 @@ export class ChannelService{
       }
 
     } catch (error) {
-      console.log(error.code)
+      this.logger.error(error.code);
     }
   }
 

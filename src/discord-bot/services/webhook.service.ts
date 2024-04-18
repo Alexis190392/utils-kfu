@@ -1,34 +1,42 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Client, EmbedBuilder, TextChannel } from "discord.js";
+import { InjectRepository } from "@nestjs/typeorm";
+import { RecordLog } from "../../webadmin/entities/record-log.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class WebhookService{
+  private readonly logger = new Logger("WebhookService");
   constructor(
     private readonly client: Client,
+
+    @InjectRepository(RecordLog)
+    private readonly recordLogRepository : Repository<RecordLog>,
   ) {}
 
-  async sendMessage(message: string, channelId: string, webhookId: string): Promise<void> {
-    try {
-      if (message !== '') {
-        await this.findWebhook(message, channelId, webhookId);
-      }
+  async sendMessage(): Promise<void> {
+    const recordLogs = await this.recordLogRepository.find({order: { date:'ASC' }})
 
-    } catch (error) {
-      console.error('Error al enviar el mensaje al webhook:', error);
+    for (const recordLog of recordLogs) {
+      if (recordLog) {
+        const sendStatus = await this.sendToWebhook(recordLog.logs, recordLog.channelId, recordLog.webhookId, recordLog.date);
+        if (sendStatus)
+          await this.recordLogRepository.delete(recordLog);
+      }
     }
+
+    // try {
+    //   if (message !== '') {
+    //     await this.findWebhook(message, channelId, webhookId, date);
+    //   }
+    //
+    // } catch (error) {
+    //   console.error('Error al enviar el mensaje al webhook:', error);
+    // }
   }
 
 
   async create([interaction], name:string, channelId: string, urlImage? :string){
-    // const channel = await interaction.channel;
-    //
-    // channel.createWebhook({
-    //   name: name,
-    //   avatar: urlImage,
-    // })
-    //   .then(webhook => console.log(`Created webhook -> ${webhook.name} - ${webhook.id}`))
-    //   .catch(console.error);
-    // const channel = await interaction.channel;
     const channel =  interaction.guild.channels.cache.get(channelId);
 
     try {
@@ -39,22 +47,11 @@ export class WebhookService{
       console.log(`Created webhook -> ${webhook.name} - ${webhook.id}`);
       return webhook.id; // Devuelve el ID del webhook
     } catch (error) {
-      throw error;
+      this.logger.error(error.message);
     }
   }
 
-
-  // async findWebhookByChannel(channelId){
-  //   const channel = await this.client.channels.fetch(channelId);
-  //   const textChannel = channel as TextChannel; // Convierte el canal a TextChannel
-  //   const webhooks = await textChannel.fetchWebhooks();
-  //   const webhook = webhooks.find(wh => wh.token);
-  //
-  //   console.log(webhook.id);
-  // }
-
-
-  async findWebhook(message: string, channelId: string, webhookID:string){
+  async sendToWebhook(message: string, channelId: string, webhookID:string, date: Date){
 
     // this.findWebhookByChannel(channelId);
 
@@ -77,7 +74,7 @@ export class WebhookService{
       embed.setTitle(webhook.name);
       embed.setColor('#ffaa00');
       embed.setDescription(message);
-      embed.setTimestamp();
+      embed.setTimestamp(date);
       embed.setFooter({
         text: '[ /send ] para enviar mensajes',
         iconURL: icon
@@ -89,8 +86,11 @@ export class WebhookService{
         avatarURL: icon,
         embeds: [embed],
       });
+
+      return true;
     } catch (error) {
-      console.error('Error trying to send a message: ', error);
+      this.logger.error('Error trying to send a message: ', error);
+      return false;
     }
   }
 }
