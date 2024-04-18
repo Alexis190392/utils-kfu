@@ -21,9 +21,7 @@ import { Cron } from "@nestjs/schedule";
 @Injectable()
 export class KfService{
   private readonly logger = new Logger('KfService');
-
-
-  private servers:Server[] = [];
+  // private servers:Server[] = [];
 
   constructor(
     private readonly commons: Commons,
@@ -35,13 +33,7 @@ export class KfService{
 
     @InjectRepository(Server)
     private readonly serverRepository : Repository<Server>,
-  ) {
-  }
-
-
-  // async delay(ms: number) {
-  //   return new Promise(resolve => setTimeout(resolve, ms));
-  // }
+  ) {}
 
   async create(createServerDto: CreateServerDto) {
     try {
@@ -109,17 +101,17 @@ export class KfService{
         modalInteraction.reply({
           content: `Nuevo server agregado: \`\`\`${server.name}\`\`\``,
         })
-        await this.fetch();
+        // await this.fetch();
 
       })
       .catch((e)=>{
         this.logger.warn(`No hubo respuesta: ${e.message}`)
       });
   }
-  @Cron('0 */10 * * * *')
-  private async fetch(){
-    this.servers = await this.findAll();
-  }
+  // @Cron('0 */10 * * * *')
+  // private async fetch(){
+  //   this.servers = await this.findAll();
+  // }
 
   private async isPresent(ip:string , port:string){
     const server = await this.serverRepository.findOneBy({ip});
@@ -132,41 +124,37 @@ export class KfService{
 
   @Cron('*/10 * * * * *')
   async process(){
-    if (this.servers.length === 0)
-      this.servers = await this.findAll();
+    // if (this.servers.length === 0)
+    const servers = await this.findAll();
 
-    const servers = this.servers;
+    if (servers.length!=0) {
+      for (const server of servers) {
+        if (server.isActive) {
+          const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`;
+          const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
 
-    for (const server of servers) {
-      if (server.isActive){
-        const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`
-        const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
-
-        const message = await this.webadminService.cronDataLogs(baseUrl, credentials, server.name, server.channelId ,server.webhook);
-        await this.webhookService.sendMessage(message, server.channelId, server.webhook)
-        // await this.delay(1000)
+          await this.webadminService.cronDataLogs(baseUrl, credentials, server.channelId, server.webhook);
+          await this.webhookService.sendMessage();
+        }
       }
     }
   }
 
-  @Cron('*/20 * * * * *')
+  @Cron('*/5 * * * * *')
   async statusServer(){
-    this.servers = await this.findAll();
-
-    const servers = this.servers;
+    const servers = await this.findAll();
 
     for (const server of servers) {
-      let status = '';
+      let status = 404;
       if (server.isActive){
         const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`
         const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
         status =  await this.webadminService.getConnection(baseUrl, credentials);
 
       }else {
-        status = 'notActive';
+        status = 502;
       }
       await this.channelService.editName(server.channelId, server.name, status)
-      // await this.delay(1000)
     }
   }
 

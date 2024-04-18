@@ -13,8 +13,6 @@ export class CurrentConsoleSend{
         'Connection': 'close'
       };
 
-      console.log(`${url}${path}`);
-
       const response = await axios.post(`http://${url}${path}`,postData,{headers})
 
 

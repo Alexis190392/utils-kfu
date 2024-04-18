@@ -1,12 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Client, TextChannel } from "discord.js";
 
 
 type ChannelType = 0|2|4;
 @Injectable()
 export class ChannelService{
-
-
+  private readonly logger: Logger;
   constructor(
     private readonly client: Client
   ) {
@@ -27,7 +26,7 @@ export class ChannelService{
 
   }
 
-  async editName(channelId: string, name: string, status: string){
+  async editName(channelId: string, name: string, status: number){
 
     try {
       const channel = await this.client.channels.fetch(channelId);
@@ -43,13 +42,13 @@ export class ChannelService{
       name = name.replace(' ','-').toLowerCase();
 
       switch (status){
-        case 'OK':
+        case 200:
           name = `💚-${name}`;
           break;
-        case 'ECONNRESET':
+        case 502:
           name = `💛-${name}`;
           break;
-        case 'ETIMEDOUT':
+        case 404:
           name = `💔-${name}`;
           break;
         default:
@@ -63,7 +62,7 @@ export class ChannelService{
       }
 
     } catch (error) {
-      console.log(error.code)
+      this.logger.error(error.code);
     }
   }
 
