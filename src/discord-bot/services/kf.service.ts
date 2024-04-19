@@ -13,17 +13,15 @@ import { ModeratorService } from "./moderator.service";
 import { CreateServerDto } from "../dtos/create-server.dto";
 import { ChannelService } from "./channel.service";
 import { WebhookService } from "./webhook.service";
-import { EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import { EmbedFieldsDto } from "../dtos/embedFields.dto";
 import { Cron } from "@nestjs/schedule";
 import { Status } from "../entities";
-import { find } from "rxjs";
 
 
 @Injectable()
 export class KfService{
   private readonly logger = new Logger('KfService');
-  // private servers:Server[] = [];
 
   constructor(
     private readonly commons: Commons,
@@ -202,4 +200,69 @@ export class KfService{
     return embed;
   }
 
+  async activity([interaction], newStatus:boolean) {
+    const verify: boolean = await this.moderatorService.verifyModerator([interaction]);
+
+    if (!verify)
+      return interaction.reply({content: "No tiene privilegios para este comando" });
+
+    const guildId = await interaction.guildId;
+    const servers = await this.serverRepository.find({where:{guildId: guildId, isActive:!newStatus}});
+
+    let activity = newStatus?'desactivados':'activados';
+    if (servers.length === 0)
+      return interaction.reply({content: `No hay servers ${activity}` });
+
+    const stringSelect = new StringSelectMenuBuilder();
+    stringSelect.setCustomId('servers')
+    stringSelect.setPlaceholder('Selecciona una opción')
+
+
+    for (const server of servers) {
+      if (server.isActive != newStatus){
+        stringSelect.addOptions(
+          new StringSelectMenuOptionBuilder()
+            .setLabel(server.name)
+            .setValue(server.channelId)
+        );
+      }
+    }
+
+    const row = new ActionRowBuilder().addComponents(stringSelect);
+    activity = newStatus?'activar':'desactivar'
+
+    const response = await interaction.reply({
+      content: `Elija el server a ${activity} registros`,
+      components: [row],
+    });
+
+    const collectorFilter = ({ user }) => user.id === interaction.user.id;
+    try {
+      const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 60000 });
+      const selectedValues = confirmation.values;
+
+      if (selectedValues.length > 0) {
+        const selectedValue = selectedValues[0];
+
+        const server = servers.find(server => server.channelId === selectedValue);
+        server.isActive = newStatus;
+
+        //Cambio el valor de actividad en bd
+        const save = this.serverRepository.create(server)
+        await this.serverRepository.save(save)
+
+        activity = newStatus?'ACTIVADO':'DESACTIVADO';
+
+        await confirmation.update({
+          content: `${activity} el registro de logs para: \`\`\`${server.name}\`\`\` `,
+          components: []
+        });
+      }
+
+    }catch (e){
+      await response.edit({content:`${e.message}`,components: []})
+      this.logger.error(e.message)
+    }
+
+  }
 }

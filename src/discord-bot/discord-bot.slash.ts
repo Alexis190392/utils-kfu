@@ -72,6 +72,22 @@ export class DiscordBotSlash{
   }
 
   @SlashCommand({
+    name: 'disable-server',
+    description: 'Desactivar logs de servidor'
+  })
+  async onDisableServers(@Context() [interaction]){
+    await this.server.activity([interaction],false);
+  }
+
+  @SlashCommand({
+    name: 'enable-server',
+    description: 'Desactivar logs de servidor'
+  })
+  async onEnableServers(@Context() [interaction]){
+    await this.server.activity([interaction],true);
+  }
+
+  @SlashCommand({
     name: 'list-admin',
     description: 'Estado de moderadores'
   })

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Client, TextChannel } from "discord.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Status } from "../entities";
+import { Server, Status } from "../entities";
 import { Repository } from "typeorm";
 import { Cron } from "@nestjs/schedule";
 
@@ -15,6 +15,9 @@ export class ChannelService{
 
     @InjectRepository(Status)
     private readonly statusRepository : Repository<Status>,
+
+    @InjectRepository(Server)
+    private readonly serverRepository : Repository<Server>,
   ) {
   }
 
@@ -33,7 +36,7 @@ export class ChannelService{
 
   }
 
-  @Cron('*/15 * * * * *')
+  @Cron('*/10 * * * * *')
   async editName() {
     try {
       const statusList = await this.statusRepository.find();
@@ -47,6 +50,17 @@ export class ChannelService{
         if (!(channel instanceof TextChannel))
           throw new Error(`El canal con el ID ${status.channelId} no es un canal de texto.`);
 
+        const server = await this.serverRepository.findOne({
+          where: {
+            channelId:status.channelId,
+            name: status.name
+          }});
+
+        if (!server.isActive){
+          status.code = 400;
+          await this.statusRepository.save(status)
+        }
+
         status.name = status.name.replace(' ', '-').toLowerCase();
 
         switch (+status.code) {
@@ -59,6 +73,10 @@ export class ChannelService{
           case 404:
             status.name = `💔-${status.name}`;
             break;
+          case 400:
+            status.name = `🖤-${status.name}`;
+            break;
+
         }
 
         if (status.name !== channel.name)
