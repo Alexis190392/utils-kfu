@@ -56,7 +56,7 @@ export class DiscordBotSlash{
 
 
   @SlashCommand({
-    name: 'add-server',
+    name: 'new-server',
     description: 'Agregar servidor'
   })
   async onNewServer(@Context() [interaction]){
@@ -72,7 +72,7 @@ export class DiscordBotSlash{
   }
 
   @SlashCommand({
-    name: 'see-admin',
+    name: 'list-admin',
     description: 'Estado de moderadores'
   })
   async onSeeModeratos(@Context() [interaction]){
@@ -80,7 +80,7 @@ export class DiscordBotSlash{
   }
 
   @SlashCommand({
-    name: 'set-admin',
+    name: 'allow-admin',
     description: 'Agregar permisos admin'
   })
   async onSetModeratos(@Context() [interaction]){
@@ -88,7 +88,7 @@ export class DiscordBotSlash{
   }
 
   @SlashCommand({
-    name: 'del-admin',
+    name: 'remove-admin',
     description: 'Eliminar permisos admin'
   })
   async onDeleteModeratos(@Context() [interaction]){
@@ -106,7 +106,8 @@ export class DiscordBotSlash{
     // await  this.channelService.editName([interaction],'1228222659054141503', '💚💛-lalala')
 
     // await this.webhooks.create([interaction],"PruebaWH4")
-    const aver = await interaction.member.id;
+    // const aver = await interaction.member.id;
+    const aver = await interaction.guildId;
     console.log(aver);
 
     // console.log(await interaction.guild.channels.fetch())

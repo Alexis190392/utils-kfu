@@ -41,6 +41,7 @@ export class CurrentConsoleLog {
       return this.newMessages(splitLines,webkookId);
     } catch (error) {
       this.logger.error(error.message)
+      return [error.code];
     }
   }
 
@@ -69,11 +70,6 @@ export class CurrentConsoleLog {
           subCache = [...messages];
           this.cache[webkookId] = subCache;
         }
-
-        if (!this.cache[webkookId]){
-        }
-        // this.cache[webkookId]=[...messages]
-
         return newMessages;
       }else{
         this.cache[webkookId]=[...messages]

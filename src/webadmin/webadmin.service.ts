@@ -22,6 +22,20 @@ export class WebadminService {
   async cronDataLogs(baseUrl:string, credentials:string, channelId: string, webhookId: string) {
     try {
       const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials, webhookId);
+
+      // console.log(data)
+      if (data[0] === 'ETIMEDOUT')
+        return 404;
+
+      if (data[0] === 'ENETUNREACH')
+        return 404;
+
+      if(data[0] === 'ECONNRESET')
+        return 503;
+
+      if (data.length === 0)
+        return 200;
+
       if (data) {
         let message = "";
         let saveRecord: RecordLog;
@@ -44,11 +58,11 @@ export class WebadminService {
           if (saveRecord)
             await this.recordLogRepository.save(saveRecord);
         }
+        return 200;
       }
-      return 200;
     } catch (error) {
       this.logger.error(error.message);
-      return 502;
+      return 404;
     }
   }
 
@@ -70,5 +84,7 @@ export class WebadminService {
       return 404;
     }
   }
+
+  split
 
 }

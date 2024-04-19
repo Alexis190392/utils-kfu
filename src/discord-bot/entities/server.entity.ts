@@ -5,6 +5,9 @@ export class Server {
   @PrimaryGeneratedColumn('uuid')
   id : string;
 
+  @Column('text')
+  guildId : string;
+
   @Column( {unique : true})
   name : string;
 

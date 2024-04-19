@@ -2,6 +2,9 @@ import { IsOptional, IsString, MinLength } from "class-validator";
 import { Column } from "typeorm";
 
 export class CreateServerDto {
+  @IsString()
+  @MinLength(1)
+  guildId: string
 
   @IsString()
   @MinLength(1)
