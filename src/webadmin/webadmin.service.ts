@@ -81,10 +81,8 @@ export class WebadminService {
       return response.status;
 
     } catch (error) {
-      return 404;
+      return error.code;
     }
   }
-
-  split
 
 }
