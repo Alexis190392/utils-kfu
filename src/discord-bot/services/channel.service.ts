@@ -1,5 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Client, TextChannel } from "discord.js";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Status } from "../entities";
+import { Repository } from "typeorm";
+import { Cron } from "@nestjs/schedule";
 
 
 type ChannelType = 0|2|4;
@@ -7,7 +11,10 @@ type ChannelType = 0|2|4;
 export class ChannelService{
   private readonly logger: Logger;
   constructor(
-    private readonly client: Client
+    private readonly client: Client,
+
+    @InjectRepository(Status)
+    private readonly statusRepository : Repository<Status>,
   ) {
   }
 
@@ -26,43 +33,36 @@ export class ChannelService{
 
   }
 
-  async editName(channelId: string, name: string, status: number){
+  @Cron('*/15 * * * * *')
+  async editName() {
 
-    try {
-      const channel = await this.client.channels.fetch(channelId);
+    const statusList = await this.statusRepository.find();
 
-      if (!channel) {
-        throw new Error(`No se encontró ningún canal con el ID ${channelId}.`);
-      }
+    for (const status of statusList) {
+      const channel = await this.client.channels.fetch(status.channelId);
 
-      if (!(channel instanceof TextChannel)) {
-        throw new Error(`El canal con el ID ${channelId} no es un canal de texto.`);
-      }
+      if (!channel)
+        throw new Error(`No se encontró ningún canal con el ID ${status.channelId}.`)
 
-      name = name.replace(' ','-').toLowerCase();
+      if (!(channel instanceof TextChannel))
+        throw new Error(`El canal con el ID ${status.channelId} no es un canal de texto.`);
 
-      switch (status){
+      status.name = status.name.replace(' ', '-').toLowerCase();
+
+      switch (+status.code) {
         case 200:
-          name = `💚-${name}`;
+          status.name = `💚-${status.name}`;
           break;
-        case 502:
-          name = `💛-${name}`;
+        case 503:
+          status.name = `💛-${status.name}`;
           break;
         case 404:
-          name = `💔-${name}`;
-          break;
-        default:
-          name = `💔-${name}`;
+          status.name = `💔-${status.name}`;
           break;
       }
-      // console.log(channel);
 
-      if (name !== channel.name) {
-        await (channel as TextChannel).setName(`${name}`);
-      }
-
-    } catch (error) {
-      this.logger.error(error.code);
+      if (status.name !== channel.name)
+        await (channel as TextChannel).setName(`${status.name}`);
     }
   }
 

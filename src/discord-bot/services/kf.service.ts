@@ -16,6 +16,8 @@ import { WebhookService } from "./webhook.service";
 import { EmbedBuilder } from "discord.js";
 import { EmbedFieldsDto } from "../dtos/embedFields.dto";
 import { Cron } from "@nestjs/schedule";
+import { Status } from "../entities";
+import { find } from "rxjs";
 
 
 @Injectable()
@@ -33,6 +35,8 @@ export class KfService{
 
     @InjectRepository(Server)
     private readonly serverRepository : Repository<Server>,
+    @InjectRepository(Status)
+    private readonly statusRepository : Repository<Status>,
   ) {}
 
   async create(createServerDto: CreateServerDto) {
@@ -122,9 +126,8 @@ export class KfService{
       return true;
   }
 
-  @Cron('*/10 * * * * *')
+  @Cron('*/5 * * * * *')
   async process(){
-    // if (this.servers.length === 0)
     const servers = await this.findAll();
 
     if (servers.length!=0) {
@@ -133,14 +136,31 @@ export class KfService{
           const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`;
           const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
 
-          await this.webadminService.cronDataLogs(baseUrl, credentials, server.channelId, server.webhook);
+          // const startTime = performance.now();
+          const statusResponse = await this.webadminService.cronDataLogs(baseUrl, credentials, server.channelId, server.webhook);
+          // console.log(`${status} ------ ${server.name}`);
+
+          let status = await this.statusRepository.findOneBy({channelId:server.channelId});
+          if (!status){
+            status = new Status();
+            status.channelId = server.channelId;
+            status.name = server.name;
+            status.code = statusResponse;
+
+            this.statusRepository.create(status);
+
+          } else {
+            status.code = statusResponse;
+          }
+
+          await this.statusRepository.save(status);
           await this.webhookService.sendMessage();
         }
       }
     }
   }
 
-  @Cron('*/5 * * * * *')
+  // @Cron('*/5 * * * * *')
   async statusServer(){
     const servers = await this.findAll();
 
@@ -152,9 +172,9 @@ export class KfService{
         status =  await this.webadminService.getConnection(baseUrl, credentials);
 
       }else {
-        status = 502;
+        status = 503;
       }
-      await this.channelService.editName(server.channelId, server.name, status)
+      // await this.channelService.editName(server.channelId, server.name, status)
     }
   }
 

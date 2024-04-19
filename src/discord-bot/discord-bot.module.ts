@@ -3,11 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { DiscordBotService } from './discord-bot.service';
 import { DiscordBotController } from './discord-bot.controller';
-import { Server } from "./entities/server.entity";
-import { Member } from "./entities/member.entity";
-import { Channel } from "./entities/channel.entity";
-import { Moderator } from "./entities/moderator.entity";
-import { Role } from "./entities/role.entity";
+
 import { WebadminModule } from "../webadmin/webadmin.module";
 import {
   ChannelService,
@@ -21,6 +17,13 @@ import { ModalComponent } from "./components/modal.component";
 import { Commons } from "../commons/commons";
 import { DiscordBotSlash } from "./discord-bot.slash";
 import { RecordLog } from "../webadmin/entities/record-log.entity";
+import {
+  Channel,
+  Member,
+  Moderator,
+  Role,
+  Server, Status
+} from "./entities";
 
 @Module({
   controllers: [DiscordBotController],
@@ -31,6 +34,7 @@ import { RecordLog } from "../webadmin/entities/record-log.entity";
       Channel,
       Moderator,
       Role,
+      Status,
       RecordLog,
     ]),
     WebadminModule,
