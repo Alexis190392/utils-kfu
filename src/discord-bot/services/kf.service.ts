@@ -91,6 +91,7 @@ export class KfService{
         const webhookId = await this.webhookService.create([interaction],`${name} Logs`,channelId,icon);
 
         const newServer = new CreateServerDto();
+        newServer.guildId = interaction.guildId;
         newServer.name = name;
         newServer.ip = ip;
         newServer.port = port;
@@ -160,24 +161,6 @@ export class KfService{
     }
   }
 
-  // @Cron('*/5 * * * * *')
-  async statusServer(){
-    const servers = await this.findAll();
-
-    for (const server of servers) {
-      let status = 404;
-      if (server.isActive){
-        const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`
-        const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
-        status =  await this.webadminService.getConnection(baseUrl, credentials);
-
-      }else {
-        status = 503;
-      }
-      // await this.channelService.editName(server.channelId, server.name, status)
-    }
-  }
-
   async listServers([interaction]) {
 
     const member = await interaction.member;
@@ -191,10 +174,12 @@ export class KfService{
     const fields = [];
 
     for (const server of serverList) {
-      const field = new EmbedFieldsDto();
-      field.name = server.name;
-      field.value = `${server.ip}:${server.port}`;
-      fields.push(field);
+      if (interaction.guildId === server.guildId) {
+        const field = new EmbedFieldsDto();
+        field.name = server.name;
+        field.value = `${server.ip}:${server.port}`;
+        fields.push(field);
+      }
     }
 
     const embed = new EmbedBuilder();
