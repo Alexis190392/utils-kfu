@@ -1,13 +1,10 @@
-# fly.toml app configuration file generated for bot-kfu on 2024-04-17T14:36:37-03:00
+# fly.toml app configuration file generated for bot-kfu on 2024-04-19T11:00:56-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'bot-kfu'
 primary_region = 'gru'
-#kill_signal = "SIGINT"
-#kill_timeout = 5
-#processes = []
 
 [build]
 
@@ -23,5 +20,3 @@ primary_region = 'gru'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-
-

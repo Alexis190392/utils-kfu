@@ -102,30 +102,30 @@ export class KfService{
 
         const server = await this.create(newServer);
         this.logger.log(`New server: ${server.name}  - ID: ${server.id}`)
+        const embed = await this.listServersEmbed([interaction]);
+        embed.setAuthor({name:`Nuevo server agregado: "${server.name}"`,
+      })
 
         modalInteraction.reply({
-          content: `Nuevo server agregado: \`\`\`${server.name}\`\`\``,
+          embeds: [embed],
         })
-        // await this.fetch();
 
       })
       .catch((e)=>{
         this.logger.warn(`No hubo respuesta: ${e.message}`)
       });
   }
-  // @Cron('0 */10 * * * *')
-  // private async fetch(){
-  //   this.servers = await this.findAll();
-  // }
 
-  private async isPresent(ip:string , port:string){
-    const server = await this.serverRepository.findOneBy({ip});
-    if (!server)
-      return false;
+  async listServers([interaction]) {
+    const embed = await this.listServersEmbed([interaction])
 
-    if(server.port === port)
-      return true;
+    try {
+      return await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      this.logger.error(`Error al enviar el mensaje: ${error}`);
+    }
   }
+
 
   @Cron('*/5 * * * * *')
   async process(){
@@ -136,10 +136,7 @@ export class KfService{
         if (server.isActive) {
           const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`;
           const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
-
-          // const startTime = performance.now();
           const statusResponse = await this.webadminService.cronDataLogs(baseUrl, credentials, server.channelId, server.webhook);
-          // console.log(`${status} ------ ${server.name}`);
 
           let status = await this.statusRepository.findOneBy({channelId:server.channelId});
           if (!status){
@@ -161,7 +158,15 @@ export class KfService{
     }
   }
 
-  async listServers([interaction]) {
+  private async isPresent(ip:string , port:string){
+    const server = await this.serverRepository.findOneBy({ip});
+    if (!server)
+      return false;
+
+    if(server.port === port)
+      return true;
+  }
+  private async listServersEmbed([interaction]) {
 
     const member = await interaction.member;
     const guild = await interaction.guild;
@@ -175,9 +180,10 @@ export class KfService{
 
     for (const server of serverList) {
       if (interaction.guildId === server.guildId) {
+        const status = server.isActive? '✔':'❌';
         const field = new EmbedFieldsDto();
         field.name = server.name;
-        field.value = `${server.ip}:${server.port}`;
+        field.value = `${server.ip}:${server.port} \n Actividad logs: ${status}`;
         fields.push(field);
       }
     }
@@ -189,14 +195,11 @@ export class KfService{
     embed.addFields(...fields);
     embed.setTimestamp();
     embed.setFooter({
-      text: name,
+      text: `[/list-servers] Ver servidores.\n[/new-server] Agregar nuevo servidor.\n${name}` ,
       iconURL: icon
     })
 
-    try {
-      return await interaction.reply({ embeds: [embed] });
-    } catch (error) {
-      this.logger.error(`Error al enviar el mensaje: ${error}`);
-    }
+    return embed;
   }
+
 }
