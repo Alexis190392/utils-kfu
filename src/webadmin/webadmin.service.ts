@@ -24,14 +24,15 @@ export class WebadminService {
       const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials, webhookId);
 
       // console.log(data)
-      if (data[0] === 'ETIMEDOUT')
-        return 404;
+      const errorMappings = {
+        'ETIMEDOUT': 404,
+        'ENETUNREACH': 404,
+        'ECONNRESET': 503,
+        'ECONNREFUSED': 503
+      };
 
-      if (data[0] === 'ENETUNREACH')
-        return 404;
-
-      if(data[0] === 'ECONNRESET')
-        return 503;
+      if (errorMappings[data[0]])
+        return errorMappings[data[0]];
 
       if (data.length === 0)
         return 200;
