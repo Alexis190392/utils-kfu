@@ -24,15 +24,6 @@ export class WebhookService{
           await this.recordLogRepository.delete(recordLog);
       }
     }
-
-    // try {
-    //   if (message !== '') {
-    //     await this.findWebhook(message, channelId, webhookId, date);
-    //   }
-    //
-    // } catch (error) {
-    //   console.error('Error al enviar el mensaje al webhook:', error);
-    // }
   }
 
 
@@ -52,8 +43,6 @@ export class WebhookService{
   }
 
   async sendToWebhook(message: string, channelId: string, webhookID:string, date: Date){
-
-    // this.findWebhookByChannel(channelId);
 
     const channel = await this.client.channels.fetch(channelId);
     const textChannel = channel as TextChannel; // Convierte el canal a TextChannel

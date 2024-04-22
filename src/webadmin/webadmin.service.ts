@@ -7,6 +7,8 @@ import {
   CurrentConsoleLog,
   CurrentConsoleSend} from "./components";
 import { RecordLog } from "./entities/record-log.entity";
+import { Server } from "../discord-bot/entities";
+import { Commons } from "../commons/commons";
 
 @Injectable()
 export class WebadminService {
@@ -14,28 +16,26 @@ export class WebadminService {
   constructor(
     private readonly currentConsoleLog: CurrentConsoleLog,
     private readonly currentConsoleSend: CurrentConsoleSend,
+    private readonly commons:Commons,
 
     @InjectRepository(RecordLog)
     private readonly recordLogRepository : Repository<RecordLog>,
   ) {}
 
-  async cronDataLogs(baseUrl:string, credentials:string, channelId: string, webhookId: string) {
+  async cronDataLogs(server:Server) {
     try {
-      const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials, webhookId);
 
-      // console.log(data)
-      const errorMappings = {
-        'ETIMEDOUT': 404,
-        'ENETUNREACH': 404,
-        'ECONNRESET': 503,
-        'ECONNREFUSED': 503
-      };
+      const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`;
+      const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
 
-      if (errorMappings[data[0]])
-        return errorMappings[data[0]];
+      const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials, server);
 
-      if (data.length === 0)
+      if (typeof data === 'number')
+        return data;
+
+      if (data.length === 0) {
         return 200;
+      }
 
       if (data) {
         let message = "";
@@ -49,8 +49,8 @@ export class WebadminService {
 
               const record = new RecordLog();
               record.logs = message;
-              record.channelId = channelId;
-              record.webhookId = webhookId;
+              record.channelId = server.channelId;
+              record.webhookId = server.webhook;
               record.date = new Date();
 
               saveRecord = this.recordLogRepository.create(record);

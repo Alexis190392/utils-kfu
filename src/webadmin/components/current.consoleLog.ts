@@ -4,6 +4,8 @@ import axios from "axios";
 import * as iconv from "iconv-lite";
 
 import { Commons } from "../../commons/commons";
+import { WhService } from "../../wh/wh.service";
+import { Server } from "../../discord-bot/entities";
 
 @Injectable()
 export class CurrentConsoleLog {
@@ -12,19 +14,23 @@ export class CurrentConsoleLog {
   private cache = {};
 
   constructor(
-    private readonly commons:Commons
+    private readonly commons:Commons,
+    private readonly whService:WhService,
   ) {
   }
 
-  async dataLogs(url: string, endpoint: string, credentials: string, webkookId: string): Promise<string[]> {
+  async dataLogs(url: string, endpoint: string, credentials: string, server: Server): Promise<string[]> {
 
     const headers = {
       'Authorization': `Basic ${credentials}`,
     };
 
+    let status = 404;
+
     try {
 
       const response = await axios.get(`${url}${endpoint}#END`, { headers, responseType: 'arraybuffer' });
+      status = response.status;
 
       const decodedData = iconv.decode(response.data, 'iso-8859-1'); // Decode from iso-8859-1 to UTF-8
       const consoleLogHtml = decodedData.toString(); // Convert to string
@@ -37,11 +43,27 @@ export class CurrentConsoleLog {
         consoleLogText = consoleLogHtml.substring(startIndex + startTag.length, endIndex).trim();
         consoleLogText = this.commons.decodeParams(consoleLogText);
       }
+
       const splitLines = this.commons.splitLines(consoleLogText);
-      return this.newMessages(splitLines,webkookId);
+
+      return this.newMessages(splitLines,server.webhook);
+
     } catch (error) {
-      this.logger.error(error.message)
-      return [error.code];
+      const errorMappings = {
+        'ETIMEDOUT': 404,
+        'ENETUNREACH': 404,
+        'ECONNRESET': 503,
+        'ECONNREFUSED': 503,
+        'EHOSTUNREACH': 503,
+      };
+
+      if (errorMappings[error.code]){
+        status = errorMappings[error.code];
+
+        return errorMappings[error.code];
+      }
+    } finally {
+      await this.whService.editName(server.channelId, status, server.name)
     }
   }
 

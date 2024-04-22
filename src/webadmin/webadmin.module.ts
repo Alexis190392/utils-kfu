@@ -9,6 +9,7 @@ import { CurrentConsoleLog,
 } from "./components";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RecordLog } from "./entities/record-log.entity";
+import { WhModule } from "../wh/wh.module";
 
 
 @Module({
@@ -17,7 +18,8 @@ import { RecordLog } from "./entities/record-log.entity";
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([
       RecordLog,
-    ])
+    ]),
+    WhModule
   ],
   providers: [
     WebadminService,

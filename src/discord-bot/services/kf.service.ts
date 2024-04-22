@@ -125,31 +125,19 @@ export class KfService{
   }
 
 
-  @Cron('*/5 * * * * *')
+  @Cron('*/20 * * * * *')
   async process(){
     const servers = await this.findAll();
+
+    //TODO verificar que si dos o mas server tienen misma ip y puerto, pero diferente guild, solo haga el llamado una vez a la misma ip
 
     if (servers.length!=0) {
       for (const server of servers) {
         if (server.isActive) {
-          const baseUrl = `http://${server.ip}:${server.port}/ServerAdmin`;
-          const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
-          const statusResponse = await this.webadminService.cronDataLogs(baseUrl, credentials, server.channelId, server.webhook);
+          const statusResponse = await this.webadminService.cronDataLogs(server);
 
-          let status = await this.statusRepository.findOneBy({channelId:server.channelId});
-          if (!status){
-            status = new Status();
-            status.channelId = server.channelId;
-            status.name = server.name;
-            status.code = statusResponse;
+          // await this.channelService.editName(server.channelId, statusResponse, server.name)
 
-            this.statusRepository.create(status);
-
-          } else {
-            status.code = statusResponse;
-          }
-
-          await this.statusRepository.save(status);
           await this.webhookService.sendMessage();
         }
       }
