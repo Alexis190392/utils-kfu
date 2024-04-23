@@ -1,9 +1,11 @@
+import { Injectable } from "@nestjs/common";
 import { Context, Options, SlashCommand, SlashCommandContext } from "necord";
 
-import { Injectable } from "@nestjs/common";
 import { DiscordBotService } from "./discord-bot.service";
 import { TextDto } from "./dtos/discord.texto.dto";
-import { KfService, MemberService, ModeratorService, RoleService, WebhookService } from "./services";
+import {
+  KfService,
+  ModeratorService } from "./services";
 
 @Injectable()
 export class DiscordBotSlash{
@@ -11,21 +13,9 @@ export class DiscordBotSlash{
   constructor(
     private readonly dcService:DiscordBotService,
     private readonly server :KfService,
-    private readonly webhooks : WebhookService,
     private readonly moderatorService:ModeratorService,
-    private readonly roleService: RoleService,
-    private readonly memberService: MemberService,
 
-  ) {
-  }
-
-  // @SlashCommand({
-  //   name: 'ping',
-  //   description: 'Ping-Pong Command',
-  // })
-  // async onPing(@Context() [interaction]: SlashCommandContext) {
-  //   return interaction.reply({ content: 'Pong!' });
-  // }
+  ) {}
 
   @SlashCommand({
     name: 'send',
@@ -35,25 +25,6 @@ export class DiscordBotSlash{
     const response=  await this.moderatorService.sendMessage([interaction],text)
     return interaction.reply({content: response });
   }
-
-  // @SlashCommand({
-  //   name: 'roles',
-  //   description: 'Extraer roles'
-  // })
-  // async onRole(@Context() [interaction]){
-  //   await this.roleService.getRoles([interaction]);
-  //   return interaction.reply({content: "Prueba rol" });
-  // }
-
-  // @SlashCommand({
-  //   name: 'users',
-  //   description: 'Extraer users'
-  // })
-  // async onUsers(@Context() [interaction]){
-  //   await this.memberService.getUsers([interaction]);
-  //   return interaction.reply({content: "Prueba users" });
-  // }
-
 
   @SlashCommand({
     name: 'new-server',
@@ -121,21 +92,4 @@ export class DiscordBotSlash{
     return interaction.reply({content: response });
   }
 
-  @SlashCommand({
-    name: 'test',
-    description: 'Eliminar despues'
-  })
-  async onTest(@Context() [interaction]){
-
-    // await this.channelService.create([interaction],"Nueva cat6",0,'1228219088246014032')
-    // await  this.channelService.editName([interaction],'1228222659054141503', '💔-lalala')
-    // await  this.channelService.editName([interaction],'1228222659054141503', '💚💛-lalala')
-
-    // await this.webhooks.create([interaction],"PruebaWH4")
-    // const aver = await interaction.member.id;
-    const aver = await interaction.channel.id;
-    console.log(aver);
-
-    // console.log(await interaction.guild.channels.fetch())
-  }
 }

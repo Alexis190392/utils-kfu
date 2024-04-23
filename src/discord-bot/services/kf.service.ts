@@ -3,21 +3,24 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException } from "@nestjs/common";
-import { Commons } from "../../commons/commons";
-import { WebadminService } from "../../webadmin/webadmin.service";
+import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Server } from "../entities/server.entity";
+import {
+  ActionRowBuilder,
+  EmbedBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder } from "discord.js";
+
+import { Commons } from "../../commons/commons";
+import { WebadminService } from "../../webadmin/webadmin.service";
+import { Server } from "../entities";
 import { ModalComponent } from "../components/modal.component";
 import { ModeratorService } from "./moderator.service";
 import { CreateServerDto } from "../dtos/create-server.dto";
 import { ChannelService } from "./channel.service";
 import { WebhookService } from "./webhook.service";
-import { ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import { EmbedFieldsDto } from "../dtos/embedFields.dto";
-import { Cron } from "@nestjs/schedule";
-import { Status } from "../entities";
-
 
 @Injectable()
 export class KfService{
@@ -33,8 +36,6 @@ export class KfService{
 
     @InjectRepository(Server)
     private readonly serverRepository : Repository<Server>,
-    @InjectRepository(Status)
-    private readonly statusRepository : Repository<Status>,
   ) {}
 
   async create(createServerDto: CreateServerDto) {
@@ -134,10 +135,7 @@ export class KfService{
     if (servers.length!=0) {
       for (const server of servers) {
         if (server.isActive) {
-          const statusResponse = await this.webadminService.cronDataLogs(server);
-
-          // await this.channelService.editName(server.channelId, statusResponse, server.name)
-
+          await this.webadminService.cronDataLogs(server);
           await this.webhookService.sendMessage();
         }
       }

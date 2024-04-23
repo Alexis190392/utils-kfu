@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { DiscordBotService } from './discord-bot.service';
-import { DiscordBotController } from './discord-bot.controller';
-
 import { WebadminModule } from "../webadmin/webadmin.module";
 import {
   ChannelService,
@@ -26,7 +24,7 @@ import {
 } from "./entities";
 
 @Module({
-  controllers: [DiscordBotController],
+  controllers: [],
   imports: [
     TypeOrmModule.forFeature([
       Server,

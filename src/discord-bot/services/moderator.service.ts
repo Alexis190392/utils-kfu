@@ -1,22 +1,25 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { WebadminService } from "../../webadmin/webadmin.service";
+import { StringSelect } from "necord";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
-import { StringSelect } from "necord";
+import {
+  ActionRowBuilder,
+  EmbedBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder } from "discord.js";
+
+import { WebadminService } from "../../webadmin/webadmin.service";
 import { DiscordBotService } from "../discord-bot.service";
 import { Commons } from "../../commons/commons";
-import { Moderator } from "../entities/moderator.entity";
+import { Moderator, Server } from "../entities";
 import { RoleService } from "./role.service";
-import { Server } from "../entities/server.entity";
-import { WebhookService } from "./webhook.service";
+
 
 @Injectable()
 export class ModeratorService{
   private readonly logger = new Logger('ModeratorService')
 
   constructor(
-    private readonly webhookService : WebhookService,
     private readonly webadminService: WebadminService,
     private readonly dcService:DiscordBotService,
     private readonly roleService: RoleService,

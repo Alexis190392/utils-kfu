@@ -1,7 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import axios from "axios";
 
 import {
   CurrentConsoleLog,
@@ -63,7 +62,7 @@ export class WebadminService {
               saveRecord = this.recordLogRepository.create(record);
             }
           }
-          if (saveRecord.logs.length!=0)
+          if (message.length > 0)
             await this.recordLogRepository.save(saveRecord);
         }
         return 200;
@@ -76,21 +75,6 @@ export class WebadminService {
 
   async sendToGame(sendText: string, baseUrl: string, credentials:string) {
     return this.currentConsoleSend.sendMessage(sendText, baseUrl, credentials);
-  }
-
-  async getConnection(baseUrl:string, credentials:string) {
-    try {
-
-      const headers = {
-        'Authorization': `Basic ${credentials}`,
-      };
-      const response = await axios.get(baseUrl, { headers });
-
-      return response.status;
-
-    } catch (error) {
-      return error.code;
-    }
   }
 
 }

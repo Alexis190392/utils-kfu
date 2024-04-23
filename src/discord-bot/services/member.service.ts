@@ -1,8 +1,10 @@
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Member } from "../entities/member.entity";
 import { Repository } from "typeorm";
 import { Context } from "necord";
-import { Injectable, Logger } from "@nestjs/common";
+
+import { Member } from "../entities";
+
 
 @Injectable()
 export class MemberService{

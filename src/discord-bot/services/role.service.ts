@@ -1,6 +1,7 @@
-import { Context } from "necord";
-import { CreateRoleDto } from "../dtos/create-role.dto";
 import { Injectable } from "@nestjs/common";
+import { Context } from "necord";
+
+import { CreateRoleDto } from "../dtos/create-role.dto";
 
 @Injectable()
 export class RoleService{

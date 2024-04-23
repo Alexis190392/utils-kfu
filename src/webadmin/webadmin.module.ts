@@ -1,20 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { WebadminService } from './webadmin.service';
-import { WebadminController } from './webadmin.controller';
 import { Commons } from "../commons/commons";
 import { CurrentConsoleLog,
         CurrentConsoleSend,
 } from "./components";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { RecordLog } from "./entities/record-log.entity";
 import { WhModule } from "../wh/wh.module";
 import { SkipLogs } from "../discord-bot/entities";
 
-
 @Module({
-  controllers: [WebadminController],
+  controllers: [],
   imports:[
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([
