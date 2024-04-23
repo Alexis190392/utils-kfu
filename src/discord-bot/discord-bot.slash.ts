@@ -103,12 +103,22 @@ export class DiscordBotSlash{
     await this.moderatorService.selectModerator([interaction])
   }
 
+  //TODO reparar
   @SlashCommand({
     name: 'remove-admin',
     description: 'Eliminar permisos admin'
   })
   async onDeleteModeratos(@Context() [interaction]){
     await this.moderatorService.deleteModerator('Rythm')
+  }
+
+  @SlashCommand({
+    name: 'skip-logs',
+    description: 'Saltar logs que contengan...'
+  })
+  async onSkipLogs(@Context() [interaction],@Options() { text }: TextDto){
+    const response = await this.dcService.skipLogs([interaction],text)
+    return interaction.reply({content: response });
   }
 
   @SlashCommand({
@@ -123,7 +133,7 @@ export class DiscordBotSlash{
 
     // await this.webhooks.create([interaction],"PruebaWH4")
     // const aver = await interaction.member.id;
-    const aver = await interaction.guildId;
+    const aver = await interaction.channel.id;
     console.log(aver);
 
     // console.log(await interaction.guild.channels.fetch())

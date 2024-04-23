@@ -7,7 +7,7 @@ import {
   CurrentConsoleLog,
   CurrentConsoleSend} from "./components";
 import { RecordLog } from "./entities/record-log.entity";
-import { Server } from "../discord-bot/entities";
+import { Server, SkipLogs } from "../discord-bot/entities";
 import { Commons } from "../commons/commons";
 
 @Injectable()
@@ -20,6 +20,8 @@ export class WebadminService {
 
     @InjectRepository(RecordLog)
     private readonly recordLogRepository : Repository<RecordLog>,
+    @InjectRepository(SkipLogs)
+    private readonly skipLogsRepository : Repository<SkipLogs>,
   ) {}
 
   async cronDataLogs(server:Server) {
@@ -29,6 +31,7 @@ export class WebadminService {
       const credentials = this.commons.encodeToBase64(`${server.user}:${server.pass}`);
 
       const data = await this.currentConsoleLog.dataLogs(baseUrl,'/current_console_log', credentials, server);
+      const skip = await this.skipLogsRepository.find();
 
       if (typeof data === 'number')
         return data;
@@ -45,8 +48,12 @@ export class WebadminService {
 
           for (const forLog of data) {
             if (forLog != "") {
-              message = `${message}\n${forLog}`;
 
+              for (const skipLog of skip) {
+                if (!forLog.includes(skipLog.text) && server.channelId === skipLog.channelId) {
+                  message = `${message}\n${forLog}`;
+                }
+              }
               const record = new RecordLog();
               record.logs = message;
               record.channelId = server.channelId;
@@ -56,7 +63,7 @@ export class WebadminService {
               saveRecord = this.recordLogRepository.create(record);
             }
           }
-          if (saveRecord)
+          if (saveRecord.logs.length!=0)
             await this.recordLogRepository.save(saveRecord);
         }
         return 200;

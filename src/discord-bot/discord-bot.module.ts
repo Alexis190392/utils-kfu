@@ -22,7 +22,7 @@ import {
   Member,
   Moderator,
   Role,
-  Server, Status
+  Server, SkipLogs, Status
 } from "./entities";
 
 @Module({
@@ -36,6 +36,7 @@ import {
       Role,
       Status,
       RecordLog,
+      SkipLogs,
     ]),
     WebadminModule,
   ],

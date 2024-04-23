@@ -1,3 +1,4 @@
+export { SkipLogs } from "./skipLogs.entity";
 export { Status } from "./status.entity";
 export { Channel } from "./channel.entity";
 export { Member } from "./member.entity";

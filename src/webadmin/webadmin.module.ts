@@ -10,6 +10,7 @@ import { CurrentConsoleLog,
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RecordLog } from "./entities/record-log.entity";
 import { WhModule } from "../wh/wh.module";
+import { SkipLogs } from "../discord-bot/entities";
 
 
 @Module({
@@ -18,6 +19,7 @@ import { WhModule } from "../wh/wh.module";
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([
       RecordLog,
+      SkipLogs,
     ]),
     WhModule
   ],
