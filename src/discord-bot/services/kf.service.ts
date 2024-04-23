@@ -130,8 +130,6 @@ export class KfService{
   async process(){
     const servers = await this.findAll();
 
-    //TODO verificar que si dos o mas server tienen misma ip y puerto, pero diferente guild, solo haga el llamado una vez a la misma ip
-
     if (servers.length!=0) {
       for (const server of servers) {
         if (server.isActive) {

@@ -76,8 +76,6 @@ export class ModeratorService{
           break;
         }
       }
-      //TODO falta resolver:
-      // await this.webadminService.sendMessage(text);
       await this.webadminService.sendToGame(text, baseUrl, credentials)
       return `Mensaje enviado: \`\`\`${text}\`\`\``;
     } else {
@@ -109,8 +107,12 @@ export class ModeratorService{
     const icon = `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp`;
     const iconUser = `https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.webp`;
     let message = '';
-    for (const mod of list) {
-      message =`${message}- ${mod.name}\n`
+    if (list.length > 0) {
+      for (const mod of list) {
+        message = `${message}- ${mod.name}\n`;
+      }
+    }else {
+      message = 'Aún no se han asignado roles.'
     }
 
     const embed = new EmbedBuilder();
@@ -140,11 +142,11 @@ export class ModeratorService{
 
   async SeeModeratos( [interaction]) {
     const allows= await this.getModerators();
-    const embed = await this.listModerators([interaction],allows);
+    await this.listModerators([interaction],allows);
   }
 
   @StringSelect('SELECT_MODERATOR')
-  async selectModerator([interaction]){
+  async selectModerator([interaction], status:boolean){
     const verify: boolean = await this.verifyModerator([interaction]);
 
     if (!verify)
@@ -167,8 +169,10 @@ export class ModeratorService{
 
     const row = new ActionRowBuilder().addComponents(stringSelect);
 
+    let content = status?'Elija un rol para permitir uso del bot en forma de moderador.':'Elija un rol para eliminar uso del bot en forma de moderador.'
+
     const response = await interaction.reply({
-      content: 'Elija un rol para permitir uso del bot en forma de moderador.',
+      content:  content,
       components: [row],
     });
 
@@ -182,10 +186,17 @@ export class ModeratorService{
 
         moderator.name = selectedValue;
 
-        const moderatorSave = this.moderatorRepository.create(moderator);
-        await this.moderatorRepository.save(moderatorSave);
+        if (status){
+          const moderatorSave = this.moderatorRepository.create(moderator);
+          await this.moderatorRepository.save(moderatorSave);
+        } else {
+          await this.moderatorRepository.delete(moderator);
+        }
 
-        await confirmation.update({ content: `Se añadió permisos de uso a: ${selectedValue}`,components: []});
+        content = status ? `Se añadió permisos de uso a: `:`Se eliminó permisos de uso a: `
+
+
+        await confirmation.update({ content: `${content}${selectedValue}`,components: []});
       }
 
     }catch (e){

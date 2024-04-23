@@ -68,19 +68,18 @@ export class DiscordBotSlash{
 
   @SlashCommand({
     name: 'allow-admin',
-    description: 'Agregar permisos admin'
+    description: 'Agregar permisos de uso admin en bot'
   })
   async onSetModeratos(@Context() [interaction]){
-    await this.moderatorService.selectModerator([interaction])
+    await this.moderatorService.selectModerator([interaction],true)
   }
 
-  //TODO reparar
   @SlashCommand({
     name: 'remove-admin',
-    description: 'Eliminar permisos admin'
+    description: 'Eliminar permisos de uso admin en bot'
   })
   async onDeleteModeratos(@Context() [interaction]){
-    await this.moderatorService.deleteModerator('Rythm')
+    await this.moderatorService.selectModerator([interaction],false)
   }
 
   @SlashCommand({
