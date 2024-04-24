@@ -1,11 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { Client } from "discord.js";
 
 type ChannelType = 0|2|4;
 @Injectable()
 export class ChannelService{
   private readonly logger = new Logger("ChannelService");
 
-  async create([interaction],name:string, type: ChannelType, parentId?: string){
+  constructor(
+    private readonly client: Client,
+  ) {}
+
+  async createWithInteraction([interaction],name:string, type: ChannelType, parentId?: string){
 
     if (!parentId)
       parentId = null;
@@ -18,6 +23,23 @@ export class ChannelService{
 
     return channel.id;
 
+  }
+
+  async createWithClient(guildId:string, name:string, type: ChannelType, parentId?: string){
+    const guild = this.client.guilds.cache.get(guildId);
+
+    if (!guild) {
+      console.log(`No se pudo encontrar el servidor con ID ${guildId}`);
+      return;
+    }
+
+    const channel = await guild.channels.create({
+      type: type,
+      name: name,
+      parent: parentId,
+    });
+
+    return channel.id;
   }
 
 }

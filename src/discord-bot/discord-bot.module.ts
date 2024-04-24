@@ -52,6 +52,8 @@ import {
   ],
   exports:[
     WebhookService,
+    ModeratorService,
+    ChannelService,
   ]
 })
 export class DiscordBotModule {}

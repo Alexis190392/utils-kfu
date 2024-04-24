@@ -10,6 +10,7 @@ import { IntentsBitField } from "discord.js";
 import { ScheduleModule } from "@nestjs/schedule";
 import { DiscordBotModule } from './discord-bot/discord-bot.module';
 import { WhModule } from './wh/wh.module';
+import { TempVoiceModule } from './temp-voice/temp-voice.module';
 
 
 @Module({
@@ -29,11 +30,13 @@ import { WhModule } from './wh/wh.module';
         IntentsBitField.Flags.DirectMessages,
         IntentsBitField.Flags.GuildMessages,
         IntentsBitField.Flags.GuildIntegrations,
-        IntentsBitField.Flags.GuildMembers
+        IntentsBitField.Flags.GuildMembers,
+        IntentsBitField.Flags.GuildVoiceStates
       ],
     }),
     DiscordBotModule,
     WhModule,
+    TempVoiceModule,
   ],
   controllers: [AppController],
   providers: [

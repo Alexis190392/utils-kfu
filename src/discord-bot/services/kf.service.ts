@@ -86,7 +86,7 @@ export class KfService{
         if (await this.isPresent(ip, port))
           return modalInteraction.reply({content: `El servidor \`\`\`${ip}:${port}\`\`\` ya se encuentra añadido` });
 
-        const channelId = await this.channelService.create([interaction],name,0);
+        const channelId = await this.channelService.createWithInteraction([interaction],name,0);
         const webhookId = await this.webhookService.create([interaction],`${name} Logs`,channelId,icon);
 
         const newServer = new CreateServerDto();

@@ -1,12 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Channel{
 
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn("text", {unique:true})
   id : string;
 
   @Column("text",{unique : true})
+  guildId : string
+
+  @Column("text",)
   name: string;
+
+  @Column("text",)
+  type: string;
 
 }
