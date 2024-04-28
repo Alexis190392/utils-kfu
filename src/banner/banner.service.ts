@@ -1,40 +1,39 @@
 import { Injectable } from "@nestjs/common";
-import { createCanvas, loadImage } from "@napi-rs/canvas";
+import { createCanvas, loadImage, SKRSContext2D } from "@napi-rs/canvas";
 import axios from "axios";
 import { AttachmentBuilder } from "discord.js";
 
+type EventType = 'steam'|'birthday'|'newMember';
 @Injectable()
 export class BannerService {
 
   async test([interaction]) {
 
-    // URL de la imagen de fondo
     const backgroundImageURL = 'https://cdn.discordapp.com/attachments/1201023027236847677/1233945277753331722/Default_wallpaper_with_dark_and_yellow_postapocalyptic_abstrac_0.jpg?ex=662ef097&is=662d9f17&hm=c7b8b5087b3471e030a472a7fe5c0966f0f1d671f1ce9d3c4847df74ea1c70bd&';
-
-    // Descargar la imagen de fondo
-    const background = await this.loadImageFromURL(backgroundImageURL);
 
     const message = '¡Aquí tienes el mensaje sobre la imagen! ';
 
     // Obtener el usuario que inició la interacción
     const member = await interaction.member;
-
     const userName = member.nickname;
 
-    // Obtener la URL del avatar del usuario
     const avatarURL = member.user.displayAvatarURL({ size: 1024, dynamic: true });
-    const avatar = await this.loadImageFromURL(avatarURL);
+
+    const canvasImage = await this.createCanvas(backgroundImageURL,avatarURL,message,userName)
+
+    await interaction.reply({ files: [canvasImage] });
+  }
 
 
-    /**
-     * CANVAS
-     */
+  async createCanvas(backgroundUrl:string , avatarUrl:string, message:string, subMessage?: string, event?:EventType){
 
-    // Crear el lienzo con las dimensiones de la imagen de fondo
+    const background = await this.loadImageFromURL(backgroundUrl);
+    const avatar = await this.loadImageFromURL(avatarUrl);
+
     const canvas = createCanvas(background.width, background.height);
-    const ctx = canvas.getContext('2d');
+    const ctx: SKRSContext2D = canvas.getContext('2d');
 
-    // Dibujar la imagen de fondo en el lienzo
+    //background
     ctx.drawImage(background, 0, 0, background.width, canvas.height);
     ctx.save();
 
@@ -45,7 +44,6 @@ export class BannerService {
     ctx.closePath();
     ctx.clip();
 
-    //crear avatar
     const avatarSize = avatarRadius*2;
     ctx.drawImage(avatar,background.width*0.5 - avatarSize/2,background.height*0.3 - avatarSize/2, avatarSize, avatarSize );
 
@@ -62,34 +60,26 @@ export class BannerService {
 
     ctx.restore();
 
-    // ///sumar torta
-    // const tortaUrl = 'https://cdn.discordapp.com/attachments/1234260062663348244/1234267195467497512/pngwing.com_1.png?ex=66301c66&is=662ecae6&hm=54d9e1a1aa0281d4047d4c04041f54528a6965c7dbe6d94a908528347672e77b&';
-    // const torta = await this.loadImageFromURL(tortaUrl);
-    //
-    // const tortaSize = background.width * 0.15;
-    // ctx.drawImage(torta,background.width*0.6 - tortaSize/2,background.height*0.45 - tortaSize/2, tortaSize, tortaSize );
-    //
-    // ctx.restore();
-
+    //message level 1
     const titleFontSize = background.width * 0.05;
     ctx.font = `${titleFontSize}px Arial`;
 
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = "center";
-    ctx.fillText(message,canvas.width/2,background.height*0.79)
+    ctx.fillText(message,canvas.width/2,background.height*0.75)
 
+    //message level 2
+   if (subMessage){
+     const messageFontSize = background.width * 0.05;
+     ctx.font = `${messageFontSize}px Arial`;
 
-    const messageFontSize = background.width * 0.06;
-    ctx.font = `${messageFontSize}px Arial`;
+     ctx.fillStyle = '#ffffff';
+     ctx.textAlign = "center";
+     ctx.fillText(subMessage,canvas.width/2,background.height*0.85)
+   }
 
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = "center";
-    ctx.fillText(`${userName}`,canvas.width/2,background.height*0.89)
+   return new AttachmentBuilder(canvas.toBuffer("image/png"), { name: 'image.jpg' });
 
-
-    const canvasImage = new AttachmentBuilder(canvas.toBuffer("image/png"),{name:'image.jpg'});
-
-    await interaction.reply({ files: [canvasImage] });
   }
 
   private async loadImageFromURL(url: string) {
