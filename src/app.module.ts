@@ -11,6 +11,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { DiscordBotModule } from './discord-bot/discord-bot.module';
 import { WhModule } from './wh/wh.module';
 import { TempVoiceModule } from './temp-voice/temp-voice.module';
+import { BannerModule } from './banner/banner.module';
 
 
 @Module({
@@ -37,6 +38,7 @@ import { TempVoiceModule } from './temp-voice/temp-voice.module';
     DiscordBotModule,
     WhModule,
     TempVoiceModule,
+    BannerModule,
   ],
   controllers: [AppController],
   providers: [
