@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { createCanvas, loadImage, } from "@napi-rs/canvas";
+import { Injectable } from "@nestjs/common";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 import axios from "axios";
 import { AttachmentBuilder } from "discord.js";
 
@@ -18,8 +18,8 @@ export class BannerService {
 
     // Obtener el usuario que inició la interacción
     const member = await interaction.member;
-    const userName = member.user.username;
-    const tag = member.user.tag;
+
+    const userName = member.nickname;
 
     // Obtener la URL del avatar del usuario
     const avatarURL = member.user.displayAvatarURL({ size: 1024, dynamic: true });
@@ -54,7 +54,6 @@ export class BannerService {
     gradient.addColorStop(0, '#ff0000'); // Color inicial
     gradient.addColorStop(1, '#ffff00'); // Color final
 
-
     //dibujar borde
     // ctx.strokeStyle= '#ffaa00';
     ctx.strokeStyle= gradient;
@@ -62,6 +61,15 @@ export class BannerService {
     ctx.stroke();
 
     ctx.restore();
+
+    // ///sumar torta
+    // const tortaUrl = 'https://cdn.discordapp.com/attachments/1234260062663348244/1234267195467497512/pngwing.com_1.png?ex=66301c66&is=662ecae6&hm=54d9e1a1aa0281d4047d4c04041f54528a6965c7dbe6d94a908528347672e77b&';
+    // const torta = await this.loadImageFromURL(tortaUrl);
+    //
+    // const tortaSize = background.width * 0.15;
+    // ctx.drawImage(torta,background.width*0.6 - tortaSize/2,background.height*0.45 - tortaSize/2, tortaSize, tortaSize );
+    //
+    // ctx.restore();
 
     const titleFontSize = background.width * 0.05;
     ctx.font = `${titleFontSize}px Arial`;
@@ -86,15 +94,9 @@ export class BannerService {
 
   private async loadImageFromURL(url: string) {
     try {
-      // Descargar la imagen desde la URL
       const response = await axios.get(url, { responseType: 'arraybuffer' });
-
-      // Convertir la respuesta en un búfer
       const imageBuffer = Buffer.from(response.data, 'binary');
-
-      // Cargar la imagen desde el búfer
       const image = await loadImage(imageBuffer);
-
       return image;
     } catch (error) {
       console.error('Error al cargar la imagen:', error);
