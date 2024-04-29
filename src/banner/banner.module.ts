@@ -9,5 +9,8 @@ import { BannerSlash } from "./banner.slash";
     BannerService,
     BannerSlash
   ],
+  exports:[
+    BannerService
+  ]
 })
 export class BannerModule {}

@@ -68,7 +68,8 @@ export class TempVoiceService {
       if (check){
         const guildId = newState.guild.id;
         const channel = await this.channelRepository.findOne({where:{guildId:guildId}})
-        channelId = channel.id;
+        if (channel)
+          channelId = channel.id;
         check = false;
       }
 

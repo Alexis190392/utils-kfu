@@ -12,6 +12,7 @@ import { DiscordBotModule } from './discord-bot/discord-bot.module';
 import { WhModule } from './wh/wh.module';
 import { TempVoiceModule } from './temp-voice/temp-voice.module';
 import { BannerModule } from './banner/banner.module';
+import { SteamModule } from './steam/steam.module';
 
 
 @Module({
@@ -39,6 +40,7 @@ import { BannerModule } from './banner/banner.module';
     WhModule,
     TempVoiceModule,
     BannerModule,
+    SteamModule,
   ],
   controllers: [AppController],
   providers: [

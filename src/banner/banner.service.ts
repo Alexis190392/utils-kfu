@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { createCanvas, loadImage, SKRSContext2D } from "@napi-rs/canvas";
 import axios from "axios";
-import { AttachmentBuilder } from "discord.js";
+import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
 type EventType = 'steam'|'birthday'|'newMember';
 @Injectable()
@@ -59,6 +59,19 @@ export class BannerService {
     ctx.stroke();
 
     ctx.restore();
+
+    if (event){
+      if (event === 'steam'){
+        // ///sumar torta
+        const steamUrl = 'https://community.akamai.steamstatic.com/public/shared/images/header/logo_steam.svg';
+        const steamImage = await this.loadImageFromURL(steamUrl);
+
+        const steamSize = steamImage.width;
+        ctx.drawImage(steamImage,background.width*0.5 - avatarSize/4,background.height*1.1 - avatarSize/2);
+
+        ctx.restore();
+      }
+    }
 
     //message level 1
     const titleFontSize = background.width * 0.05;
